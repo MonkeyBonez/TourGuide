@@ -1,0 +1,2705 @@
+[
+ {
+  "qid": "Q191130",
+  "label": "Kanazawa",
+  "label_ja": "金沢市",
+  "sitelinks": 90,
+  "inst": [
+   "big city",
+   "city for international conferences and tourism",
+   "core city of Japan",
+   "jōkamachi",
+   "prefectural capital of Japan"
+  ],
+  "lat": 36.561055555,
+  "lon": 136.6565
+ },
+ {
+  "qid": "Q998239",
+  "label": "Kenroku-en",
+  "label_ja": "兼六園",
+  "sitelinks": 24,
+  "inst": [
+   "Japanese strolling garden",
+   "daimyō garden"
+  ],
+  "lat": 36.561944444,
+  "lon": 136.6625
+ },
+ {
+  "qid": "Q511412",
+  "label": "Kanazawa Castle",
+  "label_ja": "金沢城",
+  "sitelinks": 21,
+  "inst": [
+   "Japanese castle",
+   "hirayamajiro"
+  ],
+  "lat": 36.564317,
+  "lon": 136.659228
+ },
+ {
+  "qid": "Q1189704",
+  "label": "Tosa Domain",
+  "label_ja": "土佐藩",
+  "sitelinks": 20,
+  "inst": [
+   "han",
+   "triad"
+  ],
+  "lat": 36.564444444,
+  "lon": 136.659166666
+ },
+ {
+  "qid": "Q1136378",
+  "label": "Kanazawa Station",
+  "label_ja": "金沢駅",
+  "sitelinks": 19,
+  "inst": [
+   "directly managed station",
+   "elevated station",
+   "interchange station",
+   "last station",
+   "railway station",
+   "union station"
+  ],
+  "lat": 36.578269444,
+  "lon": 136.647761111
+ },
+ {
+  "qid": "Q3242206",
+  "label": "21st Century Museum of Contemporary Art",
+  "label_ja": "金沢21世紀美術館",
+  "sitelinks": 17,
+  "inst": [
+   "art gallery",
+   "contemporary art museum"
+  ],
+  "lat": 36.5608,
+  "lon": 136.658
+ },
+ {
+  "qid": "Q998709",
+  "label": "Oyama Shrine",
+  "label_ja": "尾山神社",
+  "sitelinks": 10,
+  "inst": [
+   "Shinto shrine"
+  ],
+  "lat": 36.566388888,
+  "lon": 136.655277777
+ },
+ {
+  "qid": "Q3297759",
+  "label": "Ishikawa Prefectural Museum of Art",
+  "label_ja": "石川県立美術館",
+  "sitelinks": 8,
+  "inst": [
+   "art museum",
+   "prefectural museum"
+  ],
+  "lat": 36.56,
+  "lon": 136.661388888
+ },
+ {
+  "qid": "Q3342007",
+  "label": "Myōryū-ji Temple",
+  "label_ja": "妙立寺",
+  "sitelinks": 6,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.55536111,
+  "lon": 136.64902778
+ },
+ {
+  "qid": "Q843469",
+  "label": "Hokuriku Broadcasting Company",
+  "label_ja": "北陸放送",
+  "sitelinks": 6,
+  "inst": [
+   "business",
+   "radio station",
+   "television station"
+  ],
+  "lat": 36.558194444,
+  "lon": 136.659694444
+ },
+ {
+  "qid": "Q11648713",
+  "label": "D. T. Suzuki Museum",
+  "label_ja": "鈴木大拙館",
+  "sitelinks": 6,
+  "inst": [
+   "biographical museum"
+  ],
+  "lat": 36.557639,
+  "lon": 136.660972
+ },
+ {
+  "qid": "Q7446985",
+  "label": "Seisonkaku",
+  "label_ja": "成巽閣",
+  "sitelinks": 6,
+  "inst": [
+   "buke yashiki",
+   "historic house museum"
+  ],
+  "lat": 36.56111111,
+  "lon": 136.66305556
+ },
+ {
+  "qid": "Q4676340",
+  "label": "Ishikawa Prefectural History Museum",
+  "label_ja": "石川県立歴史博物館",
+  "sitelinks": 5,
+  "inst": [
+   "history museum",
+   "prefectural museum"
+  ],
+  "lat": 36.55861111,
+  "lon": 136.66277778
+ },
+ {
+  "qid": "Q11421429",
+  "label": "Japan National Route 249",
+  "label_ja": "国道249号",
+  "sitelinks": 5,
+  "inst": [
+   "road"
+  ],
+  "lat": 36.572144444,
+  "lon": 136.655922222
+ },
+ {
+  "qid": "Q11453044",
+  "label": "Murō Saisei Kinenkan Museum",
+  "label_ja": "室生犀星記念館",
+  "sitelinks": 5,
+  "inst": [
+   "biographical museum"
+  ],
+  "lat": 36.559056,
+  "lon": 136.648194
+ },
+ {
+  "qid": "Q42898428",
+  "label": "Kanazawa Yasue Gold Leaf Museum",
+  "label_ja": "金沢市立安江金箔工芸館",
+  "sitelinks": 5,
+  "inst": [
+   "craft museum"
+  ],
+  "lat": 36.57375,
+  "lon": 136.66594444
+ },
+ {
+  "qid": "Q5897562",
+  "label": "Higashiyama-Higashi",
+  "label_ja": "東山ひがし",
+  "sitelinks": 4,
+  "inst": [
+   "hanamachi in Kanazawa"
+  ],
+  "lat": 36.572453,
+  "lon": 136.667164
+ },
+ {
+  "qid": "Q6156827",
+  "label": "Japan National Route 157",
+  "label_ja": "国道157号",
+  "sitelinks": 4,
+  "inst": [
+   "road"
+  ],
+  "lat": 36.572144444,
+  "lon": 136.655922222
+ },
+ {
+  "qid": "Q6156832",
+  "label": "Japan National Route 159",
+  "label_ja": "国道159号",
+  "sitelinks": 4,
+  "inst": [
+   "road"
+  ],
+  "lat": 36.572144444,
+  "lon": 136.655922222
+ },
+ {
+  "qid": "Q6157183",
+  "label": "Japan National Route 304",
+  "label_ja": "国道304号",
+  "sitelinks": 4,
+  "inst": [
+   "road"
+  ],
+  "lat": 36.572144444,
+  "lon": 136.655922222
+ },
+ {
+  "qid": "Q6157185",
+  "label": "Japan National Route 305",
+  "label_ja": "国道305号",
+  "sitelinks": 4,
+  "inst": [
+   "road"
+  ],
+  "lat": 36.572144444,
+  "lon": 136.655922222
+ },
+ {
+  "qid": "Q6157333",
+  "label": "Japan National Route 359",
+  "label_ja": "国道359号",
+  "sitelinks": 4,
+  "inst": [
+   "road"
+  ],
+  "lat": 36.572144444,
+  "lon": 136.655922222
+ },
+ {
+  "qid": "Q7231539",
+  "label": "Porte Kanazawa",
+  "label_ja": "ポルテ金沢",
+  "sitelinks": 4,
+  "inst": [
+   "skyscraper"
+  ],
+  "lat": 36.57630556,
+  "lon": 136.64930556
+ },
+ {
+  "qid": "Q11353350",
+  "label": "Nanatsuya Station",
+  "label_ja": "七ツ屋駅",
+  "sitelinks": 4,
+  "inst": [
+   "railway station",
+   "railway station above ground",
+   "unmanned station"
+  ],
+  "lat": 36.58310833,
+  "lon": 136.6517528
+ },
+ {
+  "qid": "Q101001030",
+  "label": "National Crafts Museum",
+  "label_ja": "国立工芸館",
+  "sitelinks": 4,
+  "inst": [
+   "art museum",
+   "craft museum",
+   "national museum"
+  ],
+  "lat": 36.559167,
+  "lon": 136.661806
+ },
+ {
+  "qid": "Q11629014",
+  "label": "Nishiizumi Station",
+  "label_ja": "西泉駅",
+  "sitelinks": 4,
+  "inst": [
+   "railway station"
+  ],
+  "lat": 36.55343056,
+  "lon": 136.6336139
+ },
+ {
+  "qid": "Q11646078",
+  "label": "Nomachi Station",
+  "label_ja": "野町駅",
+  "sitelinks": 4,
+  "inst": [
+   "railway station"
+  ],
+  "lat": 36.553965,
+  "lon": 136.644409
+ },
+ {
+  "qid": "Q128034889",
+  "label": "Hokutetsu‐Kanazawa Station",
+  "label_ja": "北鉄金沢駅",
+  "sitelinks": 4,
+  "inst": [
+   "dead-end railway station",
+   "last station",
+   "underground railway station"
+  ],
+  "lat": 36.57897,
+  "lon": 136.649885
+ },
+ {
+  "qid": "Q11585980",
+  "label": "Ishikawa Prefectural Museum of Traditonal Arts and Crafts",
+  "label_ja": "石川県立伝統産業工芸館",
+  "sitelinks": 4,
+  "inst": [
+   "craft museum",
+   "prefectural museum"
+  ],
+  "lat": 36.56112222,
+  "lon": 136.66400556
+ },
+ {
+  "qid": "Q6080285",
+  "label": "Ishikawa Ongakudō",
+  "label_ja": "石川県立音楽堂",
+  "sitelinks": 3,
+  "inst": [
+   "music venue"
+  ],
+  "lat": 36.57666667,
+  "lon": 136.64777778
+ },
+ {
+  "qid": "Q11653513",
+  "label": "Nagamachi Samurai District",
+  "label_ja": "長町武家屋敷跡",
+  "sitelinks": 3,
+  "inst": [
+   "neighborhood"
+  ],
+  "lat": 36.564,
+  "lon": 136.6499
+ },
+ {
+  "qid": "Q11368794",
+  "label": "Kazuemachi",
+  "label_ja": "主計町",
+  "sitelinks": 3,
+  "inst": [
+   "chōchō",
+   "hanamachi in Kanazawa"
+  ],
+  "lat": 36.5723,
+  "lon": 136.6635
+ },
+ {
+  "qid": "Q11369003",
+  "label": "Kuboichi Ototsurugigū",
+  "label_ja": "久保市乙剣宮",
+  "sitelinks": 3,
+  "inst": [
+   "Shinto shrine"
+  ],
+  "lat": 36.571831,
+  "lon": 136.662975
+ },
+ {
+  "qid": "Q11415303",
+  "label": "Kanazawa Branch, Nagoya High Court",
+  "label_ja": "名古屋高等裁判所金沢支部",
+  "sitelinks": 3,
+  "inst": [],
+  "lat": 36.566639,
+  "lon": 136.662639
+ },
+ {
+  "qid": "Q11436109",
+  "label": "Daitōa Seisen Taihi",
+  "label_ja": "大東亜聖戦大碑",
+  "sitelinks": 3,
+  "inst": [
+   "stele"
+  ],
+  "lat": 36.55933056,
+  "lon": 136.66393611
+ },
+ {
+  "qid": "Q43064611",
+  "label": "Kanazawa Phonograph Museum",
+  "label_ja": "金沢蓄音器館",
+  "sitelinks": 3,
+  "inst": [
+   "museum"
+  ],
+  "lat": 36.57130556,
+  "lon": 136.66272222
+ },
+ {
+  "qid": "Q11637884",
+  "label": "Tatsumi Canal",
+  "label_ja": "辰巳用水",
+  "sitelinks": 3,
+  "inst": [
+   "aqueduct"
+  ],
+  "lat": 36.559166666,
+  "lon": 136.666388888
+ },
+ {
+  "qid": "Q125927189",
+  "label": "Utasu Shrine",
+  "label_ja": "宇多須神社",
+  "sitelinks": 3,
+  "inst": [
+   "Shinto shrine"
+  ],
+  "lat": 36.573,
+  "lon": 136.668389
+ },
+ {
+  "qid": "Q11585956",
+  "label": "Shiinoki Cultural Complex, Ishikawa Prefecture",
+  "label_ja": "石川県政記念しいのき迎賓館",
+  "sitelinks": 3,
+  "inst": [
+   "public building"
+  ],
+  "lat": 36.562367,
+  "lon": 136.657808
+ },
+ {
+  "qid": "Q11647461",
+  "label": "Kanazawa City Ashigaru Museum",
+  "label_ja": "金沢市足軽資料館",
+  "sitelinks": 2,
+  "inst": [
+   "buke yashiki",
+   "historic house museum"
+  ],
+  "lat": 36.566111,
+  "lon": 136.65
+ },
+ {
+  "qid": "Q11647512",
+  "label": "Kanazawa Hyakubangai",
+  "label_ja": "金沢百番街",
+  "sitelinks": 2,
+  "inst": [
+   "commercial building",
+   "station building"
+  ],
+  "lat": 36.57884,
+  "lon": 136.64846
+ },
+ {
+  "qid": "Q11647513",
+  "label": "Kanazawa Shrine",
+  "label_ja": "金沢神社",
+  "sitelinks": 2,
+  "inst": [
+   "Shinto shrine",
+   "Tenmangū (worship)"
+  ],
+  "lat": 36.560456,
+  "lon": 136.662874
+ },
+ {
+  "qid": "Q11647524",
+  "label": "Kanazawa Noh Museum",
+  "label_ja": "金沢能楽美術館",
+  "sitelinks": 2,
+  "inst": [
+   "art museum",
+   "theatre museum"
+  ],
+  "lat": 36.561611,
+  "lon": 136.658056
+ },
+ {
+  "qid": "Q11647547",
+  "label": "Kanazawa Miyako Hotel",
+  "label_ja": "金沢都ホテル",
+  "sitelinks": 2,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.577778,
+  "lon": 136.650333
+ },
+ {
+  "qid": "Q11653473",
+  "label": "長田町駅",
+  "label_ja": "長田町駅",
+  "sitelinks": 2,
+  "inst": [
+   "railway station"
+  ],
+  "lat": 36.57775,
+  "lon": 136.6399444
+ },
+ {
+  "qid": "Q11667631",
+  "label": "Kōrinbō",
+  "label_ja": "香林坊",
+  "sitelinks": 2,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.564119444,
+  "lon": 136.653469444
+ },
+ {
+  "qid": "Q11667632",
+  "label": "Kohrinbo Atrio",
+  "label_ja": "香林坊アトリオ",
+  "sitelinks": 2,
+  "inst": [
+   "shopping center"
+  ],
+  "lat": 36.563333,
+  "lon": 136.654167
+ },
+ {
+  "qid": "Q17226445",
+  "label": "Hirosaka",
+  "label_ja": "広坂",
+  "sitelinks": 2,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.561347222,
+  "lon": 136.6557
+ },
+ {
+  "qid": "Q18338651",
+  "label": "Kyōkaku-ji Temple",
+  "label_ja": "慶覚寺",
+  "sitelinks": 2,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.55416667,
+  "lon": 136.65944444
+ },
+ {
+  "qid": "Q28690260",
+  "label": "Cinémonde",
+  "label_ja": "シネモンド",
+  "sitelinks": 2,
+  "inst": [
+   "mini theater"
+  ],
+  "lat": 36.56236,
+  "lon": 136.6533
+ },
+ {
+  "qid": "Q30926019",
+  "label": "Kōtoku-ji Temple",
+  "label_ja": "興徳寺",
+  "sitelinks": 2,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.55302778,
+  "lon": 136.65052778
+ },
+ {
+  "qid": "Q30926058",
+  "label": "Zenshō-ji Temple",
+  "label_ja": "全性寺",
+  "sitelinks": 2,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.57647222,
+  "lon": 136.66919444
+ },
+ {
+  "qid": "Q30926295",
+  "label": "Honkō-ji Temple",
+  "label_ja": "本光寺",
+  "sitelinks": 2,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.57944444,
+  "lon": 136.63866667
+ },
+ {
+  "qid": "Q11228088",
+  "label": "Korinbo Tokyu Square",
+  "label_ja": "香林坊東急スクエア",
+  "sitelinks": 2,
+  "inst": [
+   "shopping center"
+  ],
+  "lat": 36.562472222,
+  "lon": 136.653166666
+ },
+ {
+  "qid": "Q11274768",
+  "label": "Nishi Chaya-gai",
+  "label_ja": "にし茶屋街",
+  "sitelinks": 2,
+  "inst": [
+   "hanamachi in Kanazawa"
+  ],
+  "lat": 36.556916666,
+  "lon": 136.647416666
+ },
+ {
+  "qid": "Q11347362",
+  "label": "Labbro Katamachi",
+  "label_ja": "ラブロ片町",
+  "sitelinks": 2,
+  "inst": [
+   "commercial complex"
+  ],
+  "lat": 36.560833,
+  "lon": 136.652778
+ },
+ {
+  "qid": "Q11365871",
+  "label": "Nakamura Shrine",
+  "label_ja": "中村神社",
+  "sitelinks": 2,
+  "inst": [
+   "Shinto shrine"
+  ],
+  "lat": 36.561278,
+  "lon": 136.644456
+ },
+ {
+  "qid": "Q11366305",
+  "label": "中橋駅",
+  "label_ja": "中橋駅",
+  "sitelinks": 2,
+  "inst": [
+   "railway station"
+  ],
+  "lat": 36.57561111,
+  "lon": 136.6446111
+ },
+ {
+  "qid": "Q11397505",
+  "label": "Maeda Tosanokami-ke Shiryokan Museum",
+  "label_ja": "前田土佐守家資料館",
+  "sitelinks": 2,
+  "inst": [
+   "house archive",
+   "museum"
+  ],
+  "lat": 36.56241667,
+  "lon": 136.65087222
+ },
+ {
+  "qid": "Q11401314",
+  "label": "Hokkoku Shimbun Akabane Hall",
+  "label_ja": "北國新聞赤羽ホール",
+  "sitelinks": 2,
+  "inst": [
+   "multi-purpose hall"
+  ],
+  "lat": 36.56491667,
+  "lon": 136.65322222
+ },
+ {
+  "qid": "Q11404442",
+  "label": "Hokuriku Regional Agricultural Administration Office",
+  "label_ja": "北陸農政局",
+  "sitelinks": 2,
+  "inst": [
+   "Regional Agricultural Administration Offices"
+  ],
+  "lat": 36.564722222,
+  "lon": 136.655833333
+ },
+ {
+  "qid": "Q11408274",
+  "label": "Minamichō",
+  "label_ja": "南町",
+  "sitelinks": 2,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.567952777,
+  "lon": 136.654186111
+ },
+ {
+  "qid": "Q11420187",
+  "label": "Fourth High School Memorial Museum of Cultural Exchange, Ishikawa",
+  "label_ja": "四高記念文化交流館",
+  "sitelinks": 2,
+  "inst": [
+   "former school building",
+   "museum"
+  ],
+  "lat": 36.5625,
+  "lon": 136.655778
+ },
+ {
+  "qid": "Q11436507",
+  "label": "Ohi Museum",
+  "label_ja": "大樋美術館",
+  "sitelinks": 2,
+  "inst": [
+   "ceramics museum",
+   "private museum"
+  ],
+  "lat": 36.569975,
+  "lon": 136.664494
+ },
+ {
+  "qid": "Q11438707",
+  "label": "Dairen-ji Temple",
+  "label_ja": "大蓮寺",
+  "sitelinks": 2,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.557639,
+  "lon": 136.648583
+ },
+ {
+  "qid": "Q11459421",
+  "label": "Kosaka",
+  "label_ja": "小坂村",
+  "sitelinks": 2,
+  "inst": [
+   "dissolved municipality of Japan"
+  ],
+  "lat": 36.581666666,
+  "lon": 136.666972222
+ },
+ {
+  "qid": "Q48760680",
+  "label": "山田らの集団",
+  "label_ja": "山田らの集団",
+  "sitelinks": 2,
+  "inst": [
+   "religious organization"
+  ],
+  "lat": 36.5790777,
+  "lon": 136.6585584
+ },
+ {
+  "qid": "Q56169178",
+  "label": "Katamachi Kirara",
+  "label_ja": "片町きらら",
+  "sitelinks": 2,
+  "inst": [
+   "commercial complex"
+  ],
+  "lat": 36.560833,
+  "lon": 136.652778
+ },
+ {
+  "qid": "Q56348569",
+  "label": "ANA Crowne Plaza Kanazawa",
+  "label_ja": "ANAクラウンプラザホテル金沢",
+  "sitelinks": 2,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.576447,
+  "lon": 136.64838
+ },
+ {
+  "qid": "Q106836680",
+  "label": "Hongan-ji Kanazawa Betsu-in Temple",
+  "label_ja": "本願寺金沢別院",
+  "sitelinks": 2,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.577382,
+  "lon": 136.655562
+ },
+ {
+  "qid": "Q11586369",
+  "label": "Ishikawa Gokoku Shrine",
+  "label_ja": "石川護国神社",
+  "sitelinks": 2,
+  "inst": [
+   "Shinto shrine",
+   "gokoku shrine"
+  ],
+  "lat": 36.559333333,
+  "lon": 136.663944444
+ },
+ {
+  "qid": "Q11586806",
+  "label": "Ishiura Shrine",
+  "label_ja": "石浦神社",
+  "sitelinks": 2,
+  "inst": [
+   "Kokuhei-sha",
+   "Shikinai Ronsha",
+   "Shinto shrine"
+  ],
+  "lat": 36.561147,
+  "lon": 136.659648
+ },
+ {
+  "qid": "Q11598493",
+  "label": "Tatemachi",
+  "label_ja": "竪町",
+  "sitelinks": 2,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.558852777,
+  "lon": 136.654808333
+ },
+ {
+  "qid": "Q11614521",
+  "label": "Incense burner in the shape of pheasant decorated with overglaze enamels",
+  "label_ja": "色絵雉香炉",
+  "sitelinks": 2,
+  "inst": [
+   "censer",
+   "ceramic sculpture",
+   "sculpture",
+   "traditional handicraft of Japan"
+  ],
+  "lat": 36.56016,
+  "lon": 136.6612
+ },
+ {
+  "qid": "Q11625080",
+  "label": "Kaga-Honda Museum",
+  "label_ja": "加賀本多博物館",
+  "sitelinks": 2,
+  "inst": [
+   "museum"
+  ],
+  "lat": 36.559083,
+  "lon": 136.66175
+ },
+ {
+  "qid": "Q11629456",
+  "label": "Nishi Chaya Shiryokan Museum",
+  "label_ja": "西茶屋資料館",
+  "sitelinks": 2,
+  "inst": [
+   "biographical museum",
+   "museum"
+  ],
+  "lat": 36.556667,
+  "lon": 136.647328
+ },
+ {
+  "qid": "Q11647356",
+  "label": "Great People of Kanazawa Memorial Museum",
+  "label_ja": "金沢ふるさと偉人館",
+  "sitelinks": 2,
+  "inst": [
+   "biographical museum"
+  ],
+  "lat": 36.559167,
+  "lon": 136.657917
+ },
+ {
+  "qid": "Q11647372",
+  "label": "Kanazawa Forus",
+  "label_ja": "金沢フォーラス",
+  "sitelinks": 2,
+  "inst": [
+   "fashion building"
+  ],
+  "lat": 36.579278,
+  "lon": 136.649806
+ },
+ {
+  "qid": "Q11647404",
+  "label": "Kanazawa District Court",
+  "label_ja": "金沢地方裁判所",
+  "sitelinks": 2,
+  "inst": [
+   "District Court"
+  ],
+  "lat": 36.567222,
+  "lon": 136.662222
+ },
+ {
+  "qid": "Q11647430",
+  "label": "Kanazawa Bunka Hall",
+  "label_ja": "金沢市文化ホール",
+  "sitelinks": 2,
+  "inst": [
+   "music venue"
+  ],
+  "lat": 36.56675,
+  "lon": 136.652889
+ },
+ {
+  "qid": "Q11647428",
+  "label": "Government of Kanazawa",
+  "label_ja": "金沢市役所",
+  "sitelinks": 2,
+  "inst": [
+   "Rathaus"
+  ],
+  "lat": 36.561278,
+  "lon": 136.656583
+ },
+ {
+  "qid": "Q11647432",
+  "label": "Kanazawa Citizens' Art Center",
+  "label_ja": "金沢市民芸術村",
+  "sitelinks": 2,
+  "inst": [
+   "art colony",
+   "arts center"
+  ],
+  "lat": 36.569444,
+  "lon": 136.639444
+ },
+ {
+  "qid": "Q11647436",
+  "label": "Kanazawa Nakamura Memorial Museum",
+  "label_ja": "金沢市立中村記念美術館",
+  "sitelinks": 2,
+  "inst": [
+   "art museum"
+  ],
+  "lat": 36.558889,
+  "lon": 136.660556
+ },
+ {
+  "qid": "Q11647452",
+  "label": "Kanazawa Municipal Tamagawa Library",
+  "label_ja": "金沢市立玉川図書館",
+  "sitelinks": 2,
+  "inst": [
+   "municipal library of Japan"
+  ],
+  "lat": 36.570025,
+  "lon": 136.651625
+ },
+ {
+  "qid": "Q111585833",
+  "label": "Dōgata no Shiinoki",
+  "label_ja": "堂形のシイノキ",
+  "sitelinks": 2,
+  "inst": [
+   "giant tree"
+  ],
+  "lat": 36.562166666,
+  "lon": 136.657833333
+ },
+ {
+  "qid": "Q111655089",
+  "label": "Ishikawa Bridge",
+  "label_ja": "石川橋",
+  "sitelinks": 2,
+  "inst": [
+   "cross-road bridge"
+  ],
+  "lat": 36.56498,
+  "lon": 136.66186
+ },
+ {
+  "qid": "Q11465245",
+  "label": "Ozaki Shrine",
+  "label_ja": "尾崎神社",
+  "sitelinks": 2,
+  "inst": [
+   "Shinto shrine",
+   "Tōshō-gū"
+  ],
+  "lat": 36.5693199,
+  "lon": 136.6575408
+ },
+ {
+  "qid": "Q11490424",
+  "label": "Tokuda Shūsei Kinenkan Museum",
+  "label_ja": "徳田秋聲記念館",
+  "sitelinks": 2,
+  "inst": [
+   "biographical museum"
+  ],
+  "lat": 36.570917,
+  "lon": 136.667083
+ },
+ {
+  "qid": "Q11519973",
+  "label": "Hondanomori Park",
+  "label_ja": "本多の森公園",
+  "sitelinks": 2,
+  "inst": [
+   "urban park"
+  ],
+  "lat": 36.559444444,
+  "lon": 136.662222222
+ },
+ {
+  "qid": "Q11538119",
+  "label": "Sakura Bridge",
+  "label_ja": "桜橋",
+  "sitelinks": 2,
+  "inst": [
+   "bridge"
+  ],
+  "lat": 36.553472222,
+  "lon": 136.655472222
+ },
+ {
+  "qid": "Q11538371",
+  "label": "Umenohashi",
+  "label_ja": "梅ノ橋",
+  "sitelinks": 2,
+  "inst": [
+   "footbridge"
+  ],
+  "lat": 36.570761111,
+  "lon": 136.666580555
+ },
+ {
+  "qid": "Q11554950",
+  "label": "Izumi Kyōka Kinenkan Museum",
+  "label_ja": "泉鏡花記念館",
+  "sitelinks": 2,
+  "inst": [
+   "biographical museum"
+  ],
+  "lat": 36.571444,
+  "lon": 136.663056
+ },
+ {
+  "qid": "Q11557355",
+  "label": "Asanogawa Ōhashi Bridge",
+  "label_ja": "浅野川大橋",
+  "sitelinks": 2,
+  "inst": [
+   "concrete arch bridge"
+  ],
+  "lat": 36.572066666,
+  "lon": 136.664475
+ },
+ {
+  "qid": "Q11569932",
+  "label": "Katamachi",
+  "label_ja": "片町",
+  "sitelinks": 2,
+  "inst": [
+   "chōchō",
+   "shopping arcade in Japan"
+  ],
+  "lat": 36.560611111,
+  "lon": 136.651288888
+ },
+ {
+  "qid": "Q11571108",
+  "label": "Saigawa Bridge",
+  "label_ja": "犀川大橋",
+  "sitelinks": 2,
+  "inst": [
+   "truss bridge"
+  ],
+  "lat": 36.558466666,
+  "lon": 136.650461111
+ },
+ {
+  "qid": "Q11571671",
+  "label": "National Hospital Organization Kanazawa Medical Center",
+  "label_ja": "国立病院機構金沢医療センター",
+  "sitelinks": 2,
+  "inst": [
+   "hospital",
+   "medical organization"
+  ],
+  "lat": 36.560614,
+  "lon": 136.665292
+ },
+ {
+  "qid": "Q11572689",
+  "label": "Gyokusen-en",
+  "label_ja": "玉泉園",
+  "sitelinks": 2,
+  "inst": [
+   "Japanese strolling garden"
+  ],
+  "lat": 36.563889,
+  "lon": 136.664028
+ },
+ {
+  "qid": "Q11580332",
+  "label": "Shiragikuchō Station",
+  "label_ja": "白菊町駅",
+  "sitelinks": 2,
+  "inst": [
+   "railway station"
+  ],
+  "lat": 36.55925,
+  "lon": 136.647
+ },
+ {
+  "qid": "Q11586004",
+  "label": "Ishikawa Prefectural Noh Theater",
+  "label_ja": "石川県立能楽堂",
+  "sitelinks": 2,
+  "inst": [
+   "noh stage",
+   "theatre building"
+  ],
+  "lat": 36.559444,
+  "lon": 136.663333
+ },
+ {
+  "qid": "Q11647457",
+  "label": "Kanazawa Municipal Baba Elementary School",
+  "label_ja": "金沢市立馬場小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan"
+  ],
+  "lat": 36.574667,
+  "lon": 136.665472
+ },
+ {
+  "qid": "Q11647493",
+  "label": "Kanazawa Theatre",
+  "label_ja": "金沢歌劇座",
+  "sitelinks": 1,
+  "inst": [
+   "music venue"
+  ],
+  "lat": 36.558917,
+  "lon": 136.6585
+ },
+ {
+  "qid": "Q11647543",
+  "label": "金沢近江町郵便局",
+  "label_ja": "金沢近江町郵便局",
+  "sitelinks": 1,
+  "inst": [
+   "post office"
+  ],
+  "lat": 36.570611,
+  "lon": 136.658861
+ },
+ {
+  "qid": "Q11647548",
+  "label": "Kanazawa metropolitan area",
+  "label_ja": "金沢都市圏",
+  "sitelinks": 1,
+  "inst": [
+   "metropolitan area"
+  ],
+  "lat": 36.566666666,
+  "lon": 136.65
+ },
+ {
+  "qid": "Q17214298",
+  "label": "ジャンボボール",
+  "label_ja": "ジャンボボール",
+  "sitelinks": 1,
+  "inst": [],
+  "lat": 36.55311111,
+  "lon": 136.633
+ },
+ {
+  "qid": "Q17225243",
+  "label": "日本基督教団金沢教会",
+  "label_ja": "日本基督教団金沢教会",
+  "sitelinks": 1,
+  "inst": [
+   "church building"
+  ],
+  "lat": 36.560639,
+  "lon": 136.655167
+ },
+ {
+  "qid": "Q17225259",
+  "label": "Kanazawa Municipal Chūō Elementary School, Housai branch",
+  "label_ja": "金沢市立中央小学校芳斎分校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan",
+   "school annex",
+   "school building"
+  ],
+  "lat": 36.572519722,
+  "lon": 136.6491
+ },
+ {
+  "qid": "Q17225279",
+  "label": "Kanazawa Municipal Chuo Elementary School",
+  "label_ja": "金沢市立中央小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan",
+   "school building"
+  ],
+  "lat": 36.570138888,
+  "lon": 136.650444444
+ },
+ {
+  "qid": "Q17228956",
+  "label": "Zenpuku-ji Temple",
+  "label_ja": "善福寺",
+  "sitelinks": 1,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.56975,
+  "lon": 136.665583
+ },
+ {
+  "qid": "Q18335505",
+  "label": "ITビジネスプラザ武蔵",
+  "label_ja": "ITビジネスプラザ武蔵",
+  "sitelinks": 1,
+  "inst": [],
+  "lat": 36.571472,
+  "lon": 136.654694
+ },
+ {
+  "qid": "Q18339284",
+  "label": "Hokku-ji Temple",
+  "label_ja": "法句寺",
+  "sitelinks": 1,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.563444444,
+  "lon": 136.666083333
+ },
+ {
+  "qid": "Q20043680",
+  "label": "Kanazawa Municipal Shikindai Junior High School",
+  "label_ja": "金沢市立紫錦台中学校",
+  "sitelinks": 1,
+  "inst": [
+   "lower secondary school in Japan"
+  ],
+  "lat": 36.558062,
+  "lon": 136.668857
+ },
+ {
+  "qid": "Q21652763",
+  "label": "Kanazawa Municipal Moriyamacho Elementary School",
+  "label_ja": "金沢市立森山町小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan"
+  ],
+  "lat": 36.578611,
+  "lon": 136.66775
+ },
+ {
+  "qid": "Q29408053",
+  "label": "Myōhō-ji Temple",
+  "label_ja": "妙法寺",
+  "sitelinks": 1,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.55147222,
+  "lon": 136.65397222
+ },
+ {
+  "qid": "Q29408194",
+  "label": "Myoten-ji Temple",
+  "label_ja": "妙典寺",
+  "sitelinks": 1,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.55386111,
+  "lon": 136.65275
+ },
+ {
+  "qid": "Q30260919",
+  "label": "Japan Community Healthcare Organization Kanazawa Hospital",
+  "label_ja": "地域医療機能推進機構金沢病院",
+  "sitelinks": 1,
+  "inst": [
+   "hospital",
+   "medical organization"
+  ],
+  "lat": 36.576922,
+  "lon": 136.652109
+ },
+ {
+  "qid": "Q30267684",
+  "label": "Kanazawa Municipal Kenroku Elementary School",
+  "label_ja": "金沢市立兼六小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan"
+  ],
+  "lat": 36.5655,
+  "lon": 136.666111111
+ },
+ {
+  "qid": "Q30926001",
+  "label": "Kōgan-ji Temple",
+  "label_ja": "高岸寺",
+  "sitelinks": 1,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.55344444,
+  "lon": 136.65322222
+ },
+ {
+  "qid": "Q30926005",
+  "label": "Renshō-ji Temple",
+  "label_ja": "蓮昌寺",
+  "sitelinks": 1,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.573944444,
+  "lon": 136.669444444
+ },
+ {
+  "qid": "Q30926023",
+  "label": "Myōtai-ji Temple",
+  "label_ja": "妙泰寺",
+  "sitelinks": 1,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.57638889,
+  "lon": 136.66847222
+ },
+ {
+  "qid": "Q30926025",
+  "label": "Ryuso-ji Temple",
+  "label_ja": "立像寺",
+  "sitelinks": 1,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.552361111,
+  "lon": 136.653083333
+ },
+ {
+  "qid": "Q11236211",
+  "label": "NTT West Kanazawa Medical Center",
+  "label_ja": "恵寿金沢病院",
+  "sitelinks": 1,
+  "inst": [
+   "hospital"
+  ],
+  "lat": 36.572167,
+  "lon": 136.662778
+ },
+ {
+  "qid": "Q11363689",
+  "label": "中央市民体育館",
+  "label_ja": "中央市民体育館",
+  "sitelinks": 1,
+  "inst": [
+   "gym"
+  ],
+  "lat": 36.5665,
+  "lon": 136.6455
+ },
+ {
+  "qid": "Q11381102",
+  "label": "Fushimi-ji Temple",
+  "label_ja": "伏見寺",
+  "sitelinks": 1,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.55397222,
+  "lon": 136.65166667
+ },
+ {
+  "qid": "Q11404415",
+  "label": "北陸学院中学校・高等学校",
+  "label_ja": "北陸学院中学校・高等学校",
+  "sitelinks": 1,
+  "inst": [
+   "unified secondary school in Japan"
+  ],
+  "lat": 36.5595,
+  "lon": 136.667083
+ },
+ {
+  "qid": "Q11404486",
+  "label": "Hondanomori Hall",
+  "label_ja": "北陸電力会館 本多の森ホール",
+  "sitelinks": 1,
+  "inst": [
+   "music venue"
+  ],
+  "lat": 36.55844444,
+  "lon": 136.665
+ },
+ {
+  "qid": "Q11415302",
+  "label": "名古屋高等検察庁金沢支部",
+  "label_ja": "名古屋高等検察庁金沢支部",
+  "sitelinks": 1,
+  "inst": [
+   "High Public Prosecutors Office"
+  ],
+  "lat": 36.56777778,
+  "lon": 136.66308333
+ },
+ {
+  "qid": "Q30929002",
+  "label": "Hōkō-ji Temple",
+  "label_ja": "法光寺",
+  "sitelinks": 1,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.55286111,
+  "lon": 136.65275
+ },
+ {
+  "qid": "Q30930612",
+  "label": "Myōshō-ji Temple",
+  "label_ja": "妙正寺",
+  "sitelinks": 1,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.57605556,
+  "lon": 136.66916667
+ },
+ {
+  "qid": "Q38276507",
+  "label": "Kanazawa Municipal Koshomachi Junior High School",
+  "label_ja": "金沢市立小将町中学校",
+  "sitelinks": 1,
+  "inst": [
+   "lower secondary school in Japan"
+  ],
+  "lat": 36.564444444,
+  "lon": 136.664444444
+ },
+ {
+  "qid": "Q38276532",
+  "label": "Kanazawa Municipal Takaoka Junior High School",
+  "label_ja": "金沢市立高岡中学校",
+  "sitelinks": 1,
+  "inst": [
+   "lower secondary school in Japan"
+  ],
+  "lat": 36.565555555,
+  "lon": 136.636111111
+ },
+ {
+  "qid": "Q43593954",
+  "label": "Rengaku-ji Temple",
+  "label_ja": "蓮覚寺",
+  "sitelinks": 1,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.576778,
+  "lon": 136.668778
+ },
+ {
+  "qid": "Q55523743",
+  "label": "Code for Kanazawa",
+  "label_ja": "Code for Kanazawa",
+  "sitelinks": 1,
+  "inst": [
+   "Code for Japan Brigade",
+   "community"
+  ],
+  "lat": 36.575007,
+  "lon": 136.646869
+ },
+ {
+  "qid": "Q61887626",
+  "label": "Kanazawa Municipal Tamagawa Children's Library",
+  "label_ja": "金沢市立玉川こども図書館",
+  "sitelinks": 1,
+  "inst": [
+   "children's library",
+   "library building",
+   "municipal library of Japan",
+   "public library"
+  ],
+  "lat": 36.570083333,
+  "lon": 136.651138888
+ },
+ {
+  "qid": "Q81970743",
+  "label": "Kanazawa Municipal Saiou Elementary School",
+  "label_ja": "金沢市立犀桜小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan"
+  ],
+  "lat": 36.555722222,
+  "lon": 136.656916666
+ },
+ {
+  "qid": "Q84136369",
+  "label": "Hiraokano Shrine",
+  "label_ja": "平岡野神社",
+  "sitelinks": 1,
+  "inst": [
+   "Shinto shrine"
+  ],
+  "lat": 36.577185,
+  "lon": 136.6463208
+ },
+ {
+  "qid": "Q84138449",
+  "label": "Kobashi Sugawara Shrine",
+  "label_ja": "小橋菅原神社",
+  "sitelinks": 1,
+  "inst": [
+   "Shinto shrine",
+   "Tenmangū (worship)"
+  ],
+  "lat": 36.5600357,
+  "lon": 136.6484162
+ },
+ {
+  "qid": "Q84139824",
+  "label": "Higashiyama Sugawara Shrine",
+  "label_ja": "東山菅原神社",
+  "sitelinks": 1,
+  "inst": [
+   "Tenmangū (worship)"
+  ],
+  "lat": 36.5728443,
+  "lon": 136.6678387
+ },
+ {
+  "qid": "Q85875145",
+  "label": "三社町",
+  "label_ja": "三社町",
+  "sitelinks": 1,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.571333333,
+  "lon": 136.6445
+ },
+ {
+  "qid": "Q85879650",
+  "label": "Koshōmachi",
+  "label_ja": "小将町",
+  "sitelinks": 1,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.564027777,
+  "lon": 136.665833333
+ },
+ {
+  "qid": "Q85880136",
+  "label": "Saiwaimachi",
+  "label_ja": "幸町",
+  "sitelinks": 1,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.553833333,
+  "lon": 136.65825
+ },
+ {
+  "qid": "Q85881211",
+  "label": "東兼六町",
+  "label_ja": "東兼六町",
+  "sitelinks": 1,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.561138888,
+  "lon": 136.667527777
+ },
+ {
+  "qid": "Q85882719",
+  "label": "Ishibiki",
+  "label_ja": "石引",
+  "sitelinks": 1,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.5565,
+  "lon": 136.669166666
+ },
+ {
+  "qid": "Q85883468",
+  "label": "菊川",
+  "label_ja": "菊川",
+  "sitelinks": 1,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.551472222,
+  "lon": 136.66175
+ },
+ {
+  "qid": "Q85884747",
+  "label": "鱗町",
+  "label_ja": "鱗町",
+  "sitelinks": 1,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.556166666,
+  "lon": 136.656833333
+ },
+ {
+  "qid": "Q97191849",
+  "label": "Johoku Hospital",
+  "label_ja": "城北病院",
+  "sitelinks": 1,
+  "inst": [
+   "hospital",
+   "medical organization"
+  ],
+  "lat": 36.58175,
+  "lon": 136.656722222
+ },
+ {
+  "qid": "Q97657099",
+  "label": "Myōkei-ji Temple",
+  "label_ja": "妙慶寺",
+  "sitelinks": 1,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.557194444,
+  "lon": 136.649972222
+ },
+ {
+  "qid": "Q107656296",
+  "label": "APITA Kanazawa",
+  "label_ja": "アピタ金沢店",
+  "sitelinks": 1,
+  "inst": [
+   "shopping center"
+  ],
+  "lat": 36.559576944,
+  "lon": 136.642708888
+ },
+ {
+  "qid": "Q11586263",
+  "label": "Ishikawa Prefectural Road and Toyama Prefectural Road Route 10",
+  "label_ja": "石川県道・富山県道10号",
+  "sitelinks": 1,
+  "inst": [
+   "road"
+  ],
+  "lat": 36.562305555,
+  "lon": 136.653666666
+ },
+ {
+  "qid": "Q11586386",
+  "label": "Ishikawa Modern Literature Museum",
+  "label_ja": "石川近代文学館",
+  "sitelinks": 1,
+  "inst": [
+   "literary museum"
+  ],
+  "lat": 36.5625,
+  "lon": 136.65577778
+ },
+ {
+  "qid": "Q11628335",
+  "label": "Saihō-ji Temple",
+  "label_ja": "西方寺",
+  "sitelinks": 1,
+  "inst": [
+   "33 Kannon pilgrimage sites",
+   "Buddhist temple"
+  ],
+  "lat": 36.55469444,
+  "lon": 136.64991667
+ },
+ {
+  "qid": "Q11640360",
+  "label": "Yugakkan High School",
+  "label_ja": "遊学館高等学校",
+  "sitelinks": 1,
+  "inst": [
+   "Japanese high school"
+  ],
+  "lat": 36.555472,
+  "lon": 136.660722
+ },
+ {
+  "qid": "Q11647376",
+  "label": "Kanazawa Central Post Office",
+  "label_ja": "金沢中央郵便局",
+  "sitelinks": 1,
+  "inst": [
+   "post office"
+  ],
+  "lat": 36.571333,
+  "lon": 136.6455
+ },
+ {
+  "qid": "Q11647380",
+  "label": "金沢中警察署",
+  "label_ja": "金沢中警察署",
+  "sitelinks": 1,
+  "inst": [
+   "police station"
+  ],
+  "lat": 36.558253,
+  "lon": 136.658528
+ },
+ {
+  "qid": "Q11647412",
+  "label": "金沢大学附属特別支援学校",
+  "label_ja": "金沢大学附属特別支援学校",
+  "sitelinks": 1,
+  "inst": [
+   "school for special needs education in Japan"
+  ],
+  "lat": 36.562778,
+  "lon": 136.666083
+ },
+ {
+  "qid": "Q11647418",
+  "label": "Kanazawa Family Court",
+  "label_ja": "金沢家庭裁判所",
+  "sitelinks": 1,
+  "inst": [
+   "Family Court"
+  ],
+  "lat": 36.567222,
+  "lon": 136.662222
+ },
+ {
+  "qid": "Q11647433",
+  "label": "金沢市消防局",
+  "label_ja": "金沢市消防局",
+  "sitelinks": 1,
+  "inst": [
+   "fire department"
+  ],
+  "lat": 36.554888888,
+  "lon": 136.634805555
+ },
+ {
+  "qid": "Q11647441",
+  "label": "Kanazawa Municipal Misoguracho Elementary School",
+  "label_ja": "金沢市立味噌蔵町小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan"
+  ],
+  "lat": 36.5655,
+  "lon": 136.666111111
+ },
+ {
+  "qid": "Q11647447",
+  "label": "Kanazawa Municipal Zaimokucho Elementary School",
+  "label_ja": "金沢市立材木町小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan"
+  ],
+  "lat": 36.567055555,
+  "lon": 136.668
+ },
+ {
+  "qid": "Q112112054",
+  "label": "Naka-no-hashi",
+  "label_ja": "中の橋",
+  "sitelinks": 1,
+  "inst": [
+   "footbridge",
+   "iron bridge"
+  ],
+  "lat": 36.572983387,
+  "lon": 136.662956159
+ },
+ {
+  "qid": "Q113944941",
+  "label": "Higashiyama",
+  "label_ja": "東山",
+  "sitelinks": 1,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.574227,
+  "lon": 136.668197
+ },
+ {
+  "qid": "Q113989105",
+  "label": "Kanazawa Municipal Meisei Elementary School",
+  "label_ja": "金沢市立明成小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan"
+  ],
+  "lat": 36.576694444,
+  "lon": 136.657111111
+ },
+ {
+  "qid": "Q113989165",
+  "label": "Kanazawa Municipal Nagatamachi Elementary School",
+  "label_ja": "金沢市立長田町小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan"
+  ],
+  "lat": 36.5755,
+  "lon": 136.642527777
+ },
+ {
+  "qid": "Q113989414",
+  "label": "Kanazawa Municipal Asanomachi Elementary School",
+  "label_ja": "金沢市立浅野町小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan"
+  ],
+  "lat": 36.581805555,
+  "lon": 136.658861111
+ },
+ {
+  "qid": "Q114642870",
+  "label": "笠市町",
+  "label_ja": "笠市町",
+  "sitelinks": 1,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.578056,
+  "lon": 136.655
+ },
+ {
+  "qid": "Q114861521",
+  "label": "Kanazawa Municipal Shinkanda Elementary School",
+  "label_ja": "金沢市立新神田小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan"
+  ],
+  "lat": 36.565055555,
+  "lon": 136.634111111
+ },
+ {
+  "qid": "Q119657926",
+  "label": "昌永町",
+  "label_ja": "昌永町",
+  "sitelinks": 1,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.579722,
+  "lon": 136.658611
+ },
+ {
+  "qid": "Q121742527",
+  "label": "Kanazawa Municipal Nagamachi Junior High School",
+  "label_ja": "金沢市立長町中学校",
+  "sitelinks": 1,
+  "inst": [
+   "lower secondary school in Japan"
+  ],
+  "lat": 36.567027777,
+  "lon": 136.65075
+ },
+ {
+  "qid": "Q127947877",
+  "label": "Kanazawa Municipal Nakamuramachi Elementary School",
+  "label_ja": "金沢市立中村町小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan"
+  ],
+  "lat": 36.56087,
+  "lon": 136.64202
+ },
+ {
+  "qid": "Q130326939",
+  "label": "Kanazawa Municipal Nagamachi Junior High School, Housai branch",
+  "label_ja": "金沢市立長町中学校芳斎分校",
+  "sitelinks": 1,
+  "inst": [
+   "lower secondary school in Japan",
+   "school annex",
+   "school building"
+  ],
+  "lat": 36.572519722,
+  "lon": 136.6491
+ },
+ {
+  "qid": "Q130534097",
+  "label": "Archives of Modern History Records, Kanazawa City Tamagawa Library",
+  "label_ja": "金沢市立玉川図書館近世史料館",
+  "sitelinks": 1,
+  "inst": [
+   "history museum",
+   "library",
+   "library branch",
+   "museum building"
+  ],
+  "lat": 36.570083333,
+  "lon": 136.651611111
+ },
+ {
+  "qid": "Q131740732",
+  "label": "Ishikawa Prefectural Asunaro Junior High School",
+  "label_ja": "石川県立あすなろ中学校",
+  "sitelinks": 1,
+  "inst": [
+   "lower secondary school in Japan"
+  ],
+  "lat": 36.554028055,
+  "lon": 136.639
+ },
+ {
+  "qid": "Q134099188",
+  "label": "Asano",
+  "label_ja": "ASANO",
+  "sitelinks": 1,
+  "inst": [
+   "business"
+  ],
+  "lat": 36.582028,
+  "lon": 136.661861
+ },
+ {
+  "qid": "Q136734069",
+  "label": "Matsumoto",
+  "label_ja": "まつ本",
+  "sitelinks": 1,
+  "inst": [
+   "Japanese restaurant",
+   "art gallery",
+   "ryokan"
+  ],
+  "lat": 36.570861662,
+  "lon": 136.663567515
+ },
+ {
+  "qid": "Q136734233",
+  "label": "Kakurega Matsumoto",
+  "label_ja": "隠れ家 まつ本",
+  "sitelinks": 1,
+  "inst": [
+   "Japanese restaurant",
+   "kappō",
+   "restaurant"
+  ],
+  "lat": 36.570799481,
+  "lon": 136.663612457
+ },
+ {
+  "qid": "Q137137115",
+  "label": "Dōdōdō",
+  "label_ja": "堂〃堂 (扁額)",
+  "sitelinks": 1,
+  "inst": [
+   "billboard",
+   "name"
+  ],
+  "lat": 36.559166944,
+  "lon": 136.657916944
+ },
+ {
+  "qid": "Q140313288",
+  "label": "Gyokuseninmaru Garden",
+  "label_ja": "玉泉院丸庭園",
+  "sitelinks": 1,
+  "inst": [
+   "Japanese garden"
+  ],
+  "lat": 36.56526,
+  "lon": 136.657323
+ },
+ {
+  "qid": "Q140317473",
+  "label": "Kanazawa Castle Park",
+  "label_ja": "金沢城公園",
+  "sitelinks": 1,
+  "inst": [
+   "park"
+  ],
+  "lat": 36.565937,
+  "lon": 136.658834
+ },
+ {
+  "qid": "Q108941267",
+  "label": "Kanazawa Municipal Nomachi Elementary School",
+  "label_ja": "金沢市立野町小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan"
+  ],
+  "lat": 36.55274,
+  "lon": 136.64848
+ },
+ {
+  "qid": "Q108941283",
+  "label": "Kanazawa Municipal Shintatemachi Elementary School",
+  "label_ja": "金沢市立新竪町小学校",
+  "sitelinks": 1,
+  "inst": [
+   "elementary school in Japan"
+  ],
+  "lat": 36.555722222,
+  "lon": 136.656888888
+ },
+ {
+  "qid": "Q109369414",
+  "label": "Kanazawa Nursing School attached to Kanazawa Medical Center, National Hospital Organization",
+  "label_ja": "国立病院機構金沢医療センター附属金沢看護学校",
+  "sitelinks": 1,
+  "inst": [
+   "specialized training college"
+  ],
+  "lat": 36.560305555,
+  "lon": 136.666777777
+ },
+ {
+  "qid": "Q111406850",
+  "label": "Hotel Nikko Kanazawa",
+  "label_ja": "ホテル日航金沢",
+  "sitelinks": 1,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.57651,
+  "lon": 136.64925
+ },
+ {
+  "qid": "Q111406854",
+  "label": "Kanazawa Tokyu Hotel",
+  "label_ja": "金沢東急ホテル",
+  "sitelinks": 1,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.562932288,
+  "lon": 136.652778386
+ },
+ {
+  "qid": "Q111406853",
+  "label": "Hotel Trusty Kanazawa Korinbo",
+  "label_ja": "ホテルトラスティ金沢香林坊",
+  "sitelinks": 1,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.56391,
+  "lon": 136.65376
+ },
+ {
+  "qid": "Q111866603",
+  "label": "The Square Hotel Kanazawa",
+  "label_ja": "ザ・スクエアホテル金沢",
+  "sitelinks": 1,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.570595,
+  "lon": 136.65508
+ },
+ {
+  "qid": "Q111866604",
+  "label": "Mitsui Garden Hotel Kanazawa",
+  "label_ja": "三井ガーデンホテル金沢",
+  "sitelinks": 1,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.56898,
+  "lon": 136.65445
+ },
+ {
+  "qid": "Q11489025",
+  "label": "Mikage Bridge",
+  "label_ja": "御影大橋",
+  "sitelinks": 1,
+  "inst": [
+   "bridge"
+  ],
+  "lat": 36.564027777,
+  "lon": 136.643638888
+ },
+ {
+  "qid": "Q11520078",
+  "label": "Hondamachi",
+  "label_ja": "本多町",
+  "sitelinks": 1,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.557861111,
+  "lon": 136.660388888
+ },
+ {
+  "qid": "Q11543772",
+  "label": "Hashiba-chō",
+  "label_ja": "橋場町",
+  "sitelinks": 1,
+  "inst": [
+   "chōchō"
+  ],
+  "lat": 36.569483333,
+  "lon": 136.666002777
+ },
+ {
+  "qid": "Q11565782",
+  "label": "Shibuya Kogyo",
+  "label_ja": "澁谷工業",
+  "sitelinks": 1,
+  "inst": [
+   "business"
+  ],
+  "lat": 36.57561,
+  "lon": 136.6374
+ },
+ {
+  "qid": "Q11585996",
+  "label": "Ishikawa Technical Senior High School",
+  "label_ja": "石川県立工業高等学校",
+  "sitelinks": 1,
+  "inst": [
+   "Japanese high school"
+  ],
+  "lat": 36.555944,
+  "lon": 136.662917
+ },
+ {
+  "qid": "Q11586015",
+  "label": "Ishikawa Prefectural Kanazawa Chuo High School",
+  "label_ja": "石川県立金沢中央高等学校",
+  "sitelinks": 1,
+  "inst": [
+   "Japanese high school",
+   "school building"
+  ],
+  "lat": 36.554028,
+  "lon": 136.639
+ },
+ {
+  "qid": "Q11586086",
+  "label": "Ishikawa Prefectural Road Route 13",
+  "label_ja": "石川県道13号",
+  "sitelinks": 1,
+  "inst": [
+   "road"
+  ],
+  "lat": 36.577527777,
+  "lon": 136.649694444
+ },
+ {
+  "qid": "Q11586121",
+  "label": "Ishikawa Prefectural Road Route 17",
+  "label_ja": "石川県道17号",
+  "sitelinks": 1,
+  "inst": [
+   "road"
+  ],
+  "lat": 36.573666666,
+  "lon": 136.651083333
+ },
+ {
+  "qid": "Q11586190",
+  "label": "Ishikawa Prefectural Road Route 25",
+  "label_ja": "石川県道25号",
+  "sitelinks": 1,
+  "inst": [
+   "road"
+  ],
+  "lat": 36.556916666,
+  "lon": 136.648916666
+ },
+ {
+  "qid": "Q11586241",
+  "label": "Ishikawa Prefectural Road Route 45",
+  "label_ja": "石川県道45号",
+  "sitelinks": 1,
+  "inst": [
+   "road"
+  ],
+  "lat": 36.556916666,
+  "lon": 136.648916666
+ },
+ {
+  "qid": "Q11586257",
+  "label": "Ishikawa Prefectural Road Route 60",
+  "label_ja": "石川県道60号",
+  "sitelinks": 1,
+  "inst": [
+   "road"
+  ],
+  "lat": 36.572083333,
+  "lon": 136.655916666
+ },
+ {
+  "qid": "Q28686510",
+  "label": "石川県観光物産館",
+  "label_ja": "石川県観光物産館",
+  "sitelinks": 0,
+  "inst": [],
+  "lat": 36.565,
+  "lon": 136.66325
+ },
+ {
+  "qid": "Q29408072",
+  "label": "本行寺",
+  "label_ja": "本行寺",
+  "sitelinks": 0,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.5565,
+  "lon": 136.66427778
+ },
+ {
+  "qid": "Q30929207",
+  "label": "円光寺",
+  "label_ja": "円光寺",
+  "sitelinks": 0,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.5755,
+  "lon": 136.66894444
+ },
+ {
+  "qid": "Q30930335",
+  "label": "Chōkyū-ji Temple",
+  "label_ja": "長久寺",
+  "sitelinks": 0,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.575833,
+  "lon": 136.668667
+ },
+ {
+  "qid": "Q30932751",
+  "label": "めいどりぃた",
+  "label_ja": "めいどりぃた",
+  "sitelinks": 0,
+  "inst": [],
+  "lat": 36.55877778,
+  "lon": 136.65480556
+ },
+ {
+  "qid": "Q43593945",
+  "label": "Myōō-ji Temple",
+  "label_ja": "妙應寺",
+  "sitelinks": 0,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.575806,
+  "lon": 136.668306
+ },
+ {
+  "qid": "Q112009287",
+  "label": "Hyatt House Kanazawa",
+  "label_ja": "ハイアット ハウス 金沢",
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.57994,
+  "lon": 136.64832
+ },
+ {
+  "qid": "Q112607943",
+  "label": "Kokutai-ji Temple",
+  "label_ja": "国泰寺",
+  "sitelinks": 0,
+  "inst": [
+   "Buddhist temple"
+  ],
+  "lat": 36.554024,
+  "lon": 136.649048
+ },
+ {
+  "qid": "Q135040293",
+  "label": "Shimonomano Shrine",
+  "label_ja": "下野間神社",
+  "sitelinks": 0,
+  "inst": [
+   "Shikinaisha",
+   "Shinto shrine"
+  ],
+  "lat": 36.584663,
+  "lon": 136.665051
+ },
+ {
+  "qid": "Q135194808",
+  "label": "Kanda Shrine (Kanazawa City)",
+  "label_ja": "神田神社（金沢市）",
+  "sitelinks": 0,
+  "inst": [
+   "Shikinai Ronsha",
+   "Shinto shrine"
+  ],
+  "lat": 36.562005,
+  "lon": 136.636959
+ },
+ {
+  "qid": "Q135194816",
+  "label": "Kanda Shrine",
+  "label_ja": "神田神社",
+  "sitelinks": 0,
+  "inst": [
+   "Kokuhei-sha",
+   "Shikinai Ronsha",
+   "Shinto shrine"
+  ],
+  "lat": 36.562016,
+  "lon": 136.636958
+ },
+ {
+  "qid": "Q139814421",
+  "label": "Kanazawa University Sengaku Dormitory",
+  "label_ja": "金沢大学泉学寮",
+  "sitelinks": 0,
+  "inst": [
+   "self-governing dormitory",
+   "university dormitory"
+  ],
+  "lat": 36.553055555,
+  "lon": 136.639444444
+ },
+ {
+  "qid": "Q111406806",
+  "label": "Dormy Inn Kanazawa Natural Hot Spring",
+  "label_ja": "天然温泉 加賀の湧泉 ドーミーイン金沢",
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.57916,
+  "lon": 136.65085
+ },
+ {
+  "qid": "Q111406807",
+  "label": "Daiwa Roynet Hotel Kanazawa",
+  "label_ja": "ダイワロイネットホテル金沢",
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.57907,
+  "lon": 136.6504
+ },
+ {
+  "qid": "Q111406805",
+  "label": "Hotel Mystays Kanazawa Castle",
+  "label_ja": "ホテルマイステイズ金沢キャッスル",
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.57822,
+  "lon": 136.65242
+ },
+ {
+  "qid": "Q111406808",
+  "label": "Kanazawa Hakuchoro Hotel Sanraku",
+  "label_ja": "金沢白鳥路ホテル山楽",
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.56818,
+  "lon": 136.66212
+ },
+ {
+  "qid": "Q111406852",
+  "label": "Hotel Mystays Premier Kanazawa",
+  "label_ja": "ホテルマイステイズプレミア金沢",
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.58002,
+  "lon": 136.6436
+ },
+ {
+  "qid": "Q111866485",
+  "label": "Hyatt Centric Kanazawa",
+  "label_ja": "ハイアット セントリック 金沢",
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.580055,
+  "lon": 136.64806
+ },
+ {
+  "qid": "Q98103974",
+  "label": "Hokuriku Broadcasting building",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "building"
+  ],
+  "lat": 36.558279,
+  "lon": 136.6596394
+ },
+ {
+  "qid": "Q111121438",
+  "label": "Kanazawa Guesthouse Stella",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hostel"
+  ],
+  "lat": 36.5741,
+  "lon": 136.66655
+ },
+ {
+  "qid": "Q111121439",
+  "label": "SHARIN Kanazawa Traveler's Inn",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hostel"
+  ],
+  "lat": 36.5763845,
+  "lon": 136.6548969
+ },
+ {
+  "qid": "Q111121440",
+  "label": "K's House Kanazawa - Travelers Hostel",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hostel"
+  ],
+  "lat": 36.5547586,
+  "lon": 136.6563532
+ },
+ {
+  "qid": "Q111121441",
+  "label": "Guest House Pongyi",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hostel"
+  ],
+  "lat": 36.573411,
+  "lon": 136.6474012
+ },
+ {
+  "qid": "Q111406804",
+  "label": "Kanazawa Manten Hotel Ekimae",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.58139,
+  "lon": 136.64978
+ },
+ {
+  "qid": "Q111406851",
+  "label": "Hotel Resol Trinity Kanazawa",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.57046,
+  "lon": 136.65453
+ },
+ {
+  "qid": "Q111406855",
+  "label": "Kanazawa Sainoniwa Hotel",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.5759,
+  "lon": 136.63718
+ },
+ {
+  "qid": "Q111866482",
+  "label": "Nakayasu Ryokan",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.57084,
+  "lon": 136.66085
+ },
+ {
+  "qid": "Q111866483",
+  "label": "Ryokan Yamamuro",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.5707,
+  "lon": 136.66099
+ },
+ {
+  "qid": "Q111866602",
+  "label": "UAN Kanazawa",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.56936,
+  "lon": 136.65657
+ },
+ {
+  "qid": "Q111866606",
+  "label": "Kumu Kanazawa by THE Share Hotels",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.56821,
+  "lon": 136.65402
+ },
+ {
+  "qid": "Q111866605",
+  "label": "Toyoko Inn Kanazawa-eki Higashi-guchi",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.57455,
+  "lon": 136.64752
+ },
+ {
+  "qid": "Q111866610",
+  "label": "Kanazawa NEW Grand Hotel Prestige",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.5664,
+  "lon": 136.65324
+ },
+ {
+  "qid": "Q111866609",
+  "label": "Kanazawa New Grand Hotel Premier",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.566963,
+  "lon": 136.6535
+ },
+ {
+  "qid": "Q112009284",
+  "label": "Yamanoo",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.57223,
+  "lon": 136.66874
+ },
+ {
+  "qid": "Q112009285",
+  "label": "Minshuku Ginmatsu",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.57163,
+  "lon": 136.66724
+ },
+ {
+  "qid": "Q112009288",
+  "label": "Daiwa Roynet Hotel KANAZAWA-MIYABI",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.58073,
+  "lon": 136.64717
+ },
+ {
+  "qid": "Q112009366",
+  "label": "Asadaya Ryokan",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.5705,
+  "lon": 136.6565
+ },
+ {
+  "qid": "Q112009367",
+  "label": "Henn na Hotel Kanazawa Korinbo",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.564556,
+  "lon": 136.654496
+ },
+ {
+  "qid": "Q112009365",
+  "label": "Hotel Trend Kanazawa Ekimae",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.580861,
+  "lon": 136.6474067
+ },
+ {
+  "qid": "Q112009369",
+  "label": "Inova Kanazawaekimae Hotel Suite",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.57296,
+  "lon": 136.644
+ },
+ {
+  "qid": "Q112009442",
+  "label": "Agora Kanazawa",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.560805,
+  "lon": 136.650833
+ },
+ {
+  "qid": "Q112009446",
+  "label": "Saik",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.55526,
+  "lon": 136.64747
+ },
+ {
+  "qid": "Q112009444",
+  "label": "Yuyaruru Saisai",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "hotel"
+  ],
+  "lat": 36.55154,
+  "lon": 136.65703
+ },
+ {
+  "qid": "Q137925026",
+  "label": "Ningen Shakai Kankyō Kagaku Kenkyūka",
+  "label_ja": null,
+  "sitelinks": 0,
+  "inst": [
+   "graduate school"
+  ],
+  "lat": 36.562818,
+  "lon": 136.666107
+ }
+]

@@ -1,0 +1,73 @@
+graph: 13567 nodes, 16289 edges (383 crossings), 28 components, largest 13406
+snap: A 27 m, B 21 m from the graph
+pois: 519 in box, 99 folded into a parent or duplicate, 328 tiered (54 tier 1, 274 tier 2); 72 inside the 400 m buffer (11 tier 1)
+interest: 5045 of 16289 edges scored within 30 m (polygon edges); max 55, cap 20 → score = min(1, interest/cap)
+  10 sights touch no edge at this viewing distance: tier 1 → 全性寺, Ishikawa Prefectural Museum of Art
+direct: 2941 m walking (straight line 2104 m, factor 1.40); labels 0.9 ms
+
+slack   metres   min  +min  cross  interest-s  T1  T2  corridor  ms
+ 0.00     2941  35.6   0.0      3         47    1   6      130    0.1
+ 0.10     3012  35.9   0.2      0        184    6  14     3336    5.4
+ 0.20     3483  41.7   6.1      1        693    6  15     4938    7.4
+ 0.30     3483  41.7   6.1      1        693    6  15     6381   11.2
+ 0.50     3917  47.2  11.6      3       1070    8  16     9440   18.5
+
+slack 0.0: tier-1 sights passed, in walking order
+  - 平岡野神社  [0 langs, w 3, tag, area]  amenity=place_of_worship religion=shinto
+  tier 2 (6): 郵太郎, 福念寺, 近世資料館, 鞍月用水, 香林坊にぎわい広場, Taito Game Station
+
+slack 0.1: tier-1 sights passed, in walking order
+  - 平岡野神社  [0 langs, w 3, tag, area]  amenity=place_of_worship religion=shinto
+  - way/519192074  [1 langs, w 4, tag-via-child, area]  leisure=park
+  - Nomura Samurai House  [3 langs, w 6, box]  tourism=attraction
+  - Nagamachi Samurais District  [2 langs, w 5, tag]  tourism=attraction
+  - Nagamachi Samurai District  [3 langs, w 6, box]  tourism=attraction
+  - Maeda Tosanokami-ke Shiryokan  [1 langs, w 4, tag, area]  building=yes tourism=museum
+  tier 2 (14): 郵太郎, 旧田丸町, 白髯神社, 護方山 専光寺, 光善寺, 福念寺, 大野庄用水, Takada Family House, Old site of Takada Family in Kaga-han, Nomura clan Samurai House, 長町, Shinise Kinenkan Museum, …
+
+slack 0.2: tier-1 sights passed, in walking order
+  - 平岡野神社  [0 langs, w 3, tag, area]  amenity=place_of_worship religion=shinto
+  - Ozaki Shrine  [1 langs, w 4, tag, area]  religion=shinto amenity=place_of_worship
+  - Kanazawa Castle Park  [20 langs, w 23, tag-via-child, area]  leisure=park
+  - Oyama-jinja Shrine  [10 langs, w 13, box-via-child, area]  amenity=place_of_worship religion=shinto
+  - 広坂緑地  [2 langs, w 5, tag-via-child, area]  leisure=park
+  - Chuo Park  [1 langs, w 4, box-via-child, area]  leisure=park
+  tier 2 (15): 郵太郎, 旧田丸町, 白髯神社, 仁隋寺, 照教寺, The Sundial, 真宗大谷派金沢別院, 岬, 安江町緑地, 武蔵ヶ辻小緑地, 袋町小緑地, 武蔵辻, …
+
+slack 0.3: tier-1 sights passed, in walking order
+  - 平岡野神社  [0 langs, w 3, tag, area]  amenity=place_of_worship religion=shinto
+  - Ozaki Shrine  [1 langs, w 4, tag, area]  religion=shinto amenity=place_of_worship
+  - Kanazawa Castle Park  [20 langs, w 23, tag-via-child, area]  leisure=park
+  - Oyama-jinja Shrine  [10 langs, w 13, box-via-child, area]  amenity=place_of_worship religion=shinto
+  - 広坂緑地  [2 langs, w 5, tag-via-child, area]  leisure=park
+  - Chuo Park  [1 langs, w 4, box-via-child, area]  leisure=park
+  tier 2 (15): 郵太郎, 旧田丸町, 白髯神社, 仁隋寺, 照教寺, The Sundial, 真宗大谷派金沢別院, 岬, 安江町緑地, 武蔵ヶ辻小緑地, 袋町小緑地, 武蔵辻, …
+
+slack 0.5: tier-1 sights passed, in walking order
+  - 平岡野神社  [0 langs, w 3, tag, area]  amenity=place_of_worship religion=shinto
+  - Ozaki Shrine  [1 langs, w 4, tag, area]  religion=shinto amenity=place_of_worship
+  - Kanazawa Castle Park  [20 langs, w 23, tag-via-child, area]  leisure=park
+  - Oyama-jinja Shrine  [10 langs, w 13, box-via-child, area]  amenity=place_of_worship religion=shinto
+  - 広坂緑地  [2 langs, w 5, tag-via-child, area]  leisure=park
+  - Kenroku-en Park  [24 langs, w 27, tag, area]  leisure=park
+  - Ishiura Shrine  [1 langs, w 4, tag, area]  amenity=place_of_worship religion=shinto
+  - 21st Century Museum of Contemporary Art, Kanazawa  [16 langs, w 19, tag, area]  building=yes tourism=museum
+  tier 2 (16): 郵太郎, 旧田丸町, 白髯神社, 仁隋寺, 照教寺, The Sundial, 真宗大谷派金沢別院, 岬, 安江町緑地, 武蔵ヶ辻小緑地, 袋町小緑地, 武蔵辻, …
+
+expected sights at slack 0.5 (bound 4410 m):
+  ✗ Tsuzumi: Tsuzumi-mon Gate [tier 2, 0 langs, 88 m off the line, 15 edges] — reachable (3389 m via it) but outscored
+  ✗ Omicho: Omicho Market [tier 1, 1 langs, 518 m off the line, 27 edges] — reachable (3112 m via it) but outscored
+  ✓ Oyama: Oyama-jinja Shrine [tier 1, 10 langs, 337 m off the line, 154 edges]
+  ✓ Kanazawa Castle: Kanazawa Castle Park [tier 1, 20 langs, 681 m off the line, 713 edges]
+  ✗ Kanazawa Castle: 金沢城惣構跡 升形遺構 [tier 2, 0 langs, 340 m off the line, 26 edges] — reachable (3078 m via it) but outscored
+  ✗ Nagamachi: Nagamachi Yuzenkan [tier 2, 0 langs, 355 m off the line, 1 edges] — reachable (3065 m via it) but outscored
+  ✗ Nagamachi: Nomura Samurai House [tier 1, 3 langs, 184 m off the line, 11 edges] — reachable (2989 m via it) but outscored
+  ✗ Nagamachi: Nagamachi Samurai District [tier 1, 3 langs, 129 m off the line, 3 edges] — reachable (3062 m via it) but outscored
+  ✗ Nagamachi: Nagamachi Samurai District [tier 1, 3 langs, 190 m off the line, 6 edges] — reachable (2989 m via it) but outscored
+  ✗ Nagamachi: Nagamachi Samurais District [tier 1, 2 langs, 192 m off the line, 9 edges] — reachable (2989 m via it) but outscored
+  ✗ Nagamachi: Nagamachi Training School Garden [tier 2, 0 langs, 38 m off the line, 2 edges] — reachable (3065 m via it) but outscored
+  ✗ Nomura: Nomura Samurai House [tier 1, 3 langs, 184 m off the line, 11 edges] — reachable (2989 m via it) but outscored
+  ✗ Nomura: Nomura clan Samurai House [tier 2, 0 langs, 191 m off the line, 10 edges] — reachable (2989 m via it) but outscored
+  ✓ Kenroku: Kenroku-en Park [tier 1, 24 langs, 856 m off the line, 985 edges]
+
+wrote routes_final_view30.geojson

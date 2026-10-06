@@ -1,0 +1,15 @@
+import Foundation
+
+/// The 6 Oct 2026 Kanazawa snapshot (Kanazawa Station → Murataya Ryokan), tiered and matched.
+/// The app's offline demo, the UI tests' data, and the compare tool's oracle.
+public enum BundledFixtures {
+    public static let kanazawaStart = Place(name: "Kanazawa Station", lat: 36.5781, lon: 136.6480)
+    public static let kanazawaEnd = Place(name: "Murataya Ryokan", lat: 36.5597, lon: 136.6534)
+
+    public static func kanazawa() throws -> FetchBox {
+        guard let url = Bundle.module.url(forResource: "kanazawa", withExtension: "json", subdirectory: "Fixtures") else {
+            throw CocoaError(.fileNoSuchFile)
+        }
+        return try JSONDecoder().decode(FetchBox.self, from: Data(contentsOf: url))
+    }
+}

@@ -1,0 +1,21 @@
+# Build
+.build/
+DerivedData/
+build/
+*.xcodeproj/
+xcuserdata/
+*.xcuserstate
+.swiftpm/
+
+# Secrets — nothing secret is ever committed (CLAUDE.md)
+.env*
+*.xcconfig.local
+*.pem
+*.p8
+*.p12
+*.mobileprovision
+
+# Local caches and scratch output
+Measure/data/cache/
+Measure/out/
+.DS_Store
