@@ -17,7 +17,7 @@ public actor TourPipeline {
     let cache: DiskCache?
     public static let routeFactor = 1.25
 
-    public init(transport: HTTPTransport = URLSessionTransport(requestTimeout: 180, resourceTimeout: 240),
+    public init(transport: HTTPTransport = URLSessionTransport(requestTimeout: 90, resourceTimeout: 150),
                 wikidataTransport: HTTPTransport? = nil,
                 cache: DiskCache? = DiskCache.named("boxes", ttl: 30 * 86_400), overpassPause: TimeInterval = 10) {
         overpass = OverpassClient(transport: transport, pause: overpassPause)

@@ -75,3 +75,22 @@ executable against `Engine/` (not added to the repo; the write-up sits beside th
   the park took its child's item; correct by the rule, odd on a card.
 - **A 200 can carry an Overpass runtime error** (`"remark": "runtime error…"`); the client treats
   it as a failed mirror.
+
+## 4. The app on the simulator (6 Oct 2026, iPhone 17 Pro, iOS 26.0)
+
+- **Kanazawa end to end in the app.** Bundled fixture: session build (graph + interest +
+  labels) 544–564 ms in a Debug build, route 67 ms (slack 0.1) to 245 ms (0.5) in Debug. Live
+  (no fixture): the in-app fetch reached a route at slack 0.2 = 42 min · 3.5 km · +6 min, the
+  golden numbers, in roughly a minute while maps.mail.ru was slow (18 s for a one-node probe).
+- **Per-mirror timeout 180 s was too patient**: a hung mirror would hold the banner for 3 min
+  before rotating. Now 90 s per request, 150 s per resource; the real query takes ~18 s.
+- **`LazyHStack` hides off-screen cards from accessibility**, so UI tests could not see card 3+.
+  The row is at most ~10 cards: plain `HStack`.
+- **The fixture path must honour the requested ends.** The demo box carries Murataya as its
+  end; a UI test sending the destination into the sea still routed to Murataya until the app
+  overwrote the box's start/end — now it's the off-graph banner, as on a live fetch.
+- **The direct route passes one Tier-1 sight** (平岡野神社, 0 languages, OSM-tagged), so the left
+  end reads "1 sight · direct", not zero.
+- **Dropped SwiftOpenAI** (≈20 transitive packages: NIO, async-http-client) for an 80-line
+  Chat Completions client in Core on the shared `HTTPTransport`; request shape and error
+  mapping are unit-tested offline. The key is only ever in the Authorization header.

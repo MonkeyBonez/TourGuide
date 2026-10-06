@@ -1,0 +1,67 @@
+name: TourGuide
+options:
+  bundleIdPrefix: com.monkeybonez
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    DEVELOPMENT_TEAM: FMDJTXM4W7
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_STRICT_CONCURRENCY: minimal
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+packages:
+  LikeWaterEngine:
+    path: Engine
+  TourGuideCore:
+    path: Core
+targets:
+  TourGuide:
+    type: application
+    platform: iOS
+    sources:
+      - path: Apps/TourGuide
+    dependencies:
+      - package: LikeWaterEngine
+        product: LikeWaterEngine
+      - package: TourGuideCore
+        product: TourGuideCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.monkeybonez.tourguide
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Tour Guide
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
+        # Base settings, so Release has them too (PocketTourGuide had them in Debug only).
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Tour Guide starts your walk where you are and shows you on the route."
+        INFOPLIST_KEY_NSCameraUsageDescription: "Photograph what you're looking at to hear what it is."
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: "Ask a question about your photo by voice."
+        INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: "Turns your spoken question into text, on this iPhone when it can."
+        INFOPLIST_KEY_NSPhotoLibraryUsageDescription: "Pick a photo to ask about."
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+  TourGuideUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests/TourGuide
+    dependencies:
+      - target: TourGuide
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: TourGuide
+schemes:
+  TourGuide:
+    build:
+      targets:
+        TourGuide: all
+        TourGuideUITests: [test]
+    test:
+      targets:
+        - TourGuideUITests
