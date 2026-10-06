@@ -18,3 +18,6 @@ Deferred work, with enough context to pick up cold. Done items move to LEARNINGS
   is loopback (desktop).
 - **Scoring grid.** Scoring is a brute-force sight × edge loop (fine on Kanazawa). Add an edge
   grid if a phone takes > 2 s.
+- **Apple names for Tier-2 sights.** Apple Maps had 22 of 40 route sights with English names
+  (LEARNINGS §5); use its name when found instead of translating. Tighten the 150 m guard for
+  small parks. Effort: S.

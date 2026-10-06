@@ -94,3 +94,27 @@ executable against `Engine/` (not added to the repo; the write-up sits beside th
 - **Dropped SwiftOpenAI** (≈20 transitive packages: NIO, async-http-client) for an 80-line
   Chat Completions client in Core on the shared `HTTPTransport`; request shape and error
   mapping are unit-tested offline. The key is only ever in the Authorization header.
+
+## 5. Apple Maps knows most of the temples (PRD §8.10, 6 Oct 2026)
+
+`MKLocalSearch` on the OSM name (local, then English) within 300 m, nearest item kept if
+≤ 150 m — the Place Card sheet's lookup — for the 40 sights on the slack 0.1 and 0.5 walks:
+**22 of 40 found.** The Tier-2 temples the owner stopped at are there with English names and
+phones: 専光寺 → Senko-ji Temple (5 m), 福念寺 → Fukunen-ji Temple (3 m), 仁隋寺 → Ninzui Temple;
+also Nomura-ke Samurai Residence, Ozaki, Ishiura, Oyama, Kenrokuen. Misses: 光善寺, 照教寺,
+白髯神社, the castle park and the 21st Century Museum (name mismatch: Apple's items are named
+differently), and street-name memorials. Some hits are wrong things (武蔵ヶ辻小緑地 → a bus stop,
+広坂緑地 at 113 m): the 150 m guard is loose for small parks. Apple's English names are a better
+source than the translator for Tier-2 names (Senko-ji vs the translator's "Gokatayama Senko-ji").
+Hours and photos aren't exposed by `MKMapItem`; they show only inside `MKMapItemDetailViewController`.
+
+Mechanics: a command-line MapKit (or Translation) call blocked on a semaphore deadlocks — the
+callbacks need the main run loop; use `RunLoop.main.run()` and `exit` from the task.
+
+## 6. Release and phone (6 Oct 2026)
+
+- Release build carries all five usage strings (they're in `project.yml` base settings), the
+  privacy manifest and the icon; a signed Release archive builds (team FMDJTXM4W7).
+- `xcodebuild -destination id=` wants the hardware UDID, not the CoreDevice identifier that
+  `devicectl` prints; `scripts/install_phone.sh` builds for `generic/platform=iOS` and installs
+  with devicectl. Installed and launched on the owner's iPhone 14 Pro (iOS 27.0.1).
