@@ -57,3 +57,21 @@ executable against `Engine/` (not added to the repo; the write-up sits beside th
 - **Debug-build cost.** Building the Kanazawa session (graph + scoring 328 sights × 16,289 edges
   + labels) and five routes runs in ~1.9 s in a debug test build; slack 0.5 alone is 0.23 s debug,
   18.5 ms release.
+
+## 3. The live pipeline in Swift (6 Oct 2026, `tgtool fetch`)
+
+- **One live fetch, A → B to a tiered box, 21 s** on the first try (maps.mail.ru answered;
+  Overpass 18.4 s for 2.5 MB, Wikidata tag + box + title bridges 2.5 s). Same result as the
+  prototype: 519 POIs, 54 Tier 1, 4,595 walk ways, 13,567 nodes; `tgtool route` on the live box
+  prints the golden table. The second fetch is a disk-cache hit in 0.04 s.
+- **The Swift matcher equals the prototype on all 519 POIs** (`WikidataMatcherTests`): tag 46,
+  box 14, tag-via-child 4, box-via-child 2, 97 parents, 2 duplicates, 53 Tier 1 before the title
+  bridge (54 after, Omicho).
+- **Box-bridge fame uses SPARQL `wikibase:sitelinks`**, tag-bridge fame uses `wbgetentities`
+  sitelinks minus commons; the prototype mixed them and the golden numbers depend on it. Kept.
+- **Title-bridge locality without a hard-coded city:** P131 values of the tag-bridged entities.
+- **Cards from the free sources** (`tgtool cards kanazawa --slacks 0.1,0.5`): 40 distinct sights,
+  12 article leads (5 en, 7 ja), 13 photos. 広坂緑地 shows the Shiinoki Cultural Complex lead —
+  the park took its child's item; correct by the rule, odd on a card.
+- **A 200 can carry an Overpass runtime error** (`"remark": "runtime error…"`); the client treats
+  it as a failed mirror.

@@ -104,4 +104,16 @@ public struct FetchBox: Codable, Sendable {
         self.start = start; self.end = end; self.bbox = bbox; self.straightM = straightM; self.slack = slack
         self.routeFactor = routeFactor; self.pois = pois; self.ways = ways; self.nodes = nodes
     }
+
+    public init(from d: Decoder) throws {
+        let c = try d.container(keyedBy: CodingKeys.self)
+        start = try c.decode(Place.self, forKey: .start); end = try c.decode(Place.self, forKey: .end)
+        bbox = try c.decode([Double].self, forKey: .bbox)
+        straightM = try c.decode(Double.self, forKey: .straightM)
+        slack = try c.decodeIfPresent(Double.self, forKey: .slack) ?? 0.5
+        routeFactor = try c.decodeIfPresent(Double.self, forKey: .routeFactor) ?? 1.25
+        pois = try c.decode([POI].self, forKey: .pois)
+        ways = try c.decodeIfPresent([Way].self, forKey: .ways) ?? []
+        nodes = try c.decodeIfPresent([[Double]].self, forKey: .nodes) ?? []
+    }
 }

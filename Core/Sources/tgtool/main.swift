@@ -148,7 +148,94 @@ func routeCommand() throws {
     }
 }
 
-// MARK: - stubs filled in M1
-func fetchCommand() async throws { fail("fetch: not built yet") }
-func matchCommand() throws { fail("match: not built yet") }
-func cardsCommand() async throws { fail("cards: not built yet") }
+// MARK: - fetch
+
+@MainActor func fetchCommand() async throws {
+    let nameA = opt("--name-a") ?? "A", nameB = opt("--name-b") ?? "B"
+    let slack = Double(opt("--slack") ?? "0.5")!
+    let out = opt("--out"), record = opt("--record")
+    let noCache = flag("--no-cache")
+    guard args.count >= 2 else { fail("usage: tgtool fetch lat,lon lat,lon [--out box.json]") }
+    let (la, lo) = coordinate(args[0]), (lb, lob) = coordinate(args[1])
+    let live = URLSessionTransport(requestTimeout: 180, resourceTimeout: 240)
+    let transport: HTTPTransport = record.map { FixtureTransport(directory: URL(fileURLWithPath: $0), mode: .record(live)) } ?? live
+    let wd: HTTPTransport = record.map { FixtureTransport(directory: URL(fileURLWithPath: $0), mode: .record(URLSessionTransport(requestTimeout: 20, resourceTimeout: 40))) }
+        ?? URLSessionTransport(requestTimeout: 20, resourceTimeout: 40)
+    let pipeline = TourPipeline(transport: transport, wikidataTransport: wd)
+    let t0 = Date()
+    let box = try await pipeline.fetchBox(from: Place(name: nameA, lat: la, lon: lo), to: Place(name: nameB, lat: lb, lon: lob),
+                                          maxSlack: slack, useCache: !noCache) { stage in
+        let dt = String(format: "%5.1fs", Date().timeIntervalSince(t0))
+        switch stage {
+        case .cacheHit: print("\(dt) cache hit")
+        case .overpass(.trying(let m, let a, let n)): print("\(dt) overpass: trying \(m) (\(a)/\(n))")
+        case .overpass(.failed(let m, let r)): print("\(dt) overpass: \(m) failed: \(r)")
+        case .parsing(let bytes): print("\(dt) parsing \(bytes / 1024) KB")
+        case .wikidata(let s): print("\(dt) wikidata: \(s)")
+        case .degraded(let s): print("\(dt) DEGRADED: \(s)")
+        case .done(let p, let t1, let w): print("\(dt) done: \(p) POIs (\(t1) tier 1), \(w) walk ways")
+        }
+    }
+    let matches = Dictionary(grouping: box.pois.compactMap(\.match), by: { $0 }).mapValues(\.count)
+    print("bbox \(box.bbox.map { String(format: "%.5f", $0) }.joined(separator: ",")), straight \(Int(box.straightM)) m, \(box.nodes.count) nodes")
+    print("matches: " + matches.sorted { $0.key < $1.key }.map { "\($0.key) \($0.value)" }.joined(separator: ", ") +
+          "; folded \(box.pois.filter(\.isFolded).count)")
+    if let out {
+        let enc = JSONEncoder()
+        try enc.encode(box).write(to: URL(fileURLWithPath: out))
+        print("wrote \(out)")
+    }
+}
+
+// MARK: - match (the matcher alone, on the prototype's files)
+
+func matchCommand() throws {
+    let out = opt("--out")
+    guard args.count >= 2 else { fail("usage: tgtool match box_pois.json wikidata_box.json") }
+    var box = try JSONDecoder().decode(FetchBox.self, from: Data(contentsOf: URL(fileURLWithPath: args[0])))
+    let items = try JSONDecoder().decode([WikidataItem].self, from: Data(contentsOf: URL(fileURLWithPath: args[1])))
+    for i in box.pois.indices where box.pois[i].wikidata != nil { box.pois[i].match = "tag" }
+    WikidataMatcher.applyBoxBridge(&box.pois, items: items)
+    WikidataMatcher.dedupe(&box.pois)
+    let matches = Dictionary(grouping: box.pois.compactMap(\.match), by: { $0 }).mapValues(\.count)
+    print("matches: " + matches.sorted { $0.key < $1.key }.map { "\($0.key) \($0.value)" }.joined(separator: ", "))
+    print("parents \(box.pois.filter { $0.parent != nil }.count), duplicates \(box.pois.filter { $0.dupOf != nil }.count), tier 1 \(box.pois.filter { $0.tier == 1 }.count)")
+    if let out { try JSONEncoder().encode(box).write(to: URL(fileURLWithPath: out)); print("wrote \(out)") }
+}
+
+// MARK: - cards
+
+@MainActor func cardsCommand() async throws {
+    let slacks = (opt("--slacks") ?? "0.1,0.5").split(separator: ",").map { Double($0)! }
+    let out = opt("--out"), record = opt("--record")
+    guard let path = args.first else { fail("usage: tgtool cards box.json|kanazawa") }
+    let box = try loadBox(path)
+    let session = try TourSession(box: box, maxSlack: max(0.5, slacks.max()!))
+    let live = URLSessionTransport(requestTimeout: 20, resourceTimeout: 40)
+    let transport: HTTPTransport = record.map { FixtureTransport(directory: URL(fileURLWithPath: $0), mode: .record(live)) } ?? live
+    let enricher = CardEnricher(transport: transport, cache: record == nil ? DiskCache.named("cards", ttl: 7 * 86_400) : nil)
+    var result: [[String: Any]] = []
+    var seen: [String: CardContent] = [:]
+    for slack in slacks {
+        let r = try session.route(slack: slack)
+        await enricher.prefetch(r.passed.map(\.sight.poi))
+        print(String(format: "\nslack %.2f: %.0f m, %.1f min, %d sights", slack, r.metres, r.seconds / 60, r.passed.count))
+        var cards: [[String: Any]] = []
+        for p in r.passed {
+            let poi = p.sight.poi
+            let c: CardContent
+            if let hit = seen[poi.id] { c = hit } else { c = await enricher.content(for: poi); seen[poi.id] = c }
+            let ex = c.extract.map { String($0.prefix(60)) } ?? "-"
+            print(String(format: "  %5.2f km  T%d  ", p.alongMetres / 1000, p.sight.tier) + "\(poi.displayName)  " +
+                  "[\(c.extractLang ?? "--") \(c.imageURL == nil ? "no photo" : "photo")\(c.osm.isEmpty ? "" : ", " + c.osm.keys.sorted().joined(separator: "/"))]  \(ex)")
+            cards.append(["id": poi.id, "name": poi.displayName, "tier": p.sight.tier, "along": p.alongMetres,
+                          "extract": c.extract ?? NSNull(), "lang": c.extractLang ?? NSNull(), "image": c.imageURL ?? NSNull()])
+        }
+        result.append(["slack": slack, "cards": cards])
+    }
+    let all = Array(seen.values)
+    print("\n\(all.count) distinct sights: \(all.filter { $0.extract != nil }.count) with an article lead " +
+          "(\(all.filter { $0.extractLang == "en" }.count) en, \(all.filter { $0.extractLang == "ja" }.count) ja), " +
+          "\(all.filter { $0.imageURL != nil }.count) with a photo, \(all.filter { !$0.osm.isEmpty }.count) with OSM details")
+    if let out { try writeJSON(["routes": result], out); print("wrote \(out)") }
+}
