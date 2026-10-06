@@ -118,9 +118,11 @@ side          W | E of the line
 6. Route with the existing router, interest in place of sun. Recompute live on every slider move; it is milliseconds on a corridor, so nothing is precomputed.
 7. Sights off the street. The router has a no-U-turn rule, so a sight up a dead-end path (a shrine 60 m off the street) is never "passed" and never bends the route. In V0 those stay as pins. Follow-up (§8.8): tapping a pin makes it a hard waypoint; that is the only case that needs waypoint machinery.
 
+8. Fastest path first. The full fetch (the slack ellipse, every sight, Wikidata) takes 20 s to a few minutes on public Overpass. While it loads, show the fastest walk so the user has something to follow at once; the slider and cards appear only when the full corridor is ready. The fastest path is still ours: a first, small Overpass query for the walk network in a narrow box around the A→B line (the direct route needs no sights and a fraction of the data), routed at slack 0. When the full corridor arrives, the route is recomputed at the user's slider position and the slider is shown. If the full fetch fails, the fastest path stays on screen with the banner (§8.2).
+
 ### 5.1 Screen
 
-One screen: a map with the route from A to B, the time-vs-interest slider, and a row of POI cards for the sights the current route passes. Moving the slider changes the route — which streets — and the cards change with it: fewer sights toward the time end, more toward the interest end.
+One screen: a map with the route from A to B, the time-vs-interest slider, and a row of POI cards for the sights the current route passes. While the corridor loads, the screen shows only the fastest path and its time, with the loading banner; no slider and no cards until the full fetch is in (§5 step 8). Moving the slider changes the route — which streets — and the cards change with it: fewer sights toward the time end, more toward the interest end.
 
 - One card per Tier-1 POI within viewing distance of the route, in walking order. Tier-2 POIs within viewing distance appear as secondary pins on the map, not as cards. POIs in the box but not within viewing distance of the route are pins too, so the user can see what the slider is not reaching.
 - Card contents are TBD. The data available per sight is the POI record in §4.4 (name, kind, Wikidata label and description, language count, heritage status). Start with name, kind, and the Wikidata description; leave the layout simple so the fields can change after the test run.

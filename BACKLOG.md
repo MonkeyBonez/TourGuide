@@ -21,3 +21,8 @@ Deferred work, with enough context to pick up cold. Done items move to LEARNINGS
 - **Apple names for Tier-2 sights.** Apple Maps had 22 of 40 route sights with English names
   (LEARNINGS §5); use its name when found instead of translating. Tighten the 150 m guard for
   small parks. Effort: S.
+- **Fastest path while loading** (PRD §5 step 8, owner's call 6 Oct 2026). Not built yet: the
+  app shows only a banner until the full corridor is in. Plan: a narrow walk-network-only
+  Overpass query (corridor of the straight line, no POIs) → `TourSession` with no sights →
+  route at slack 0 and draw it; hide slider and cards; swap in the full session when it lands.
+  Measure how much faster the narrow query is. Effort: M.
