@@ -7,13 +7,14 @@ struct ContentView: View {
     @EnvironmentObject var model: AppModel
 
     var body: some View {
-        Inner(model: model, translations: model.translations, appleNames: model.appleNames)
+        Inner(model: model, translations: model.translations, appleNames: model.appleNames, walkBlurbs: model.walkBlurbs)
     }
 
     private struct Inner: View {
         @ObservedObject var model: AppModel
         @ObservedObject var translations: TranslationStore
         @ObservedObject var appleNames: AppleNameStore
+        @ObservedObject var walkBlurbs: WalkDescriptionStore
 
         var body: some View {
             ZStack(alignment: .top) {
@@ -33,8 +34,9 @@ struct ContentView: View {
             }
             .translationTask(translations.configuration) { session in await translations.run(session) }
             .sheet(isPresented: $model.showSearch) { SearchSheet(model: model) }
-            .sheet(isPresented: $model.showSettings) { SettingsSheet(model: model, translations: translations, appleNames: appleNames) }
+            .sheet(isPresented: $model.showSettings) { SettingsSheet(model: model, translations: translations, appleNames: appleNames, walkBlurbs: walkBlurbs) }
             .sheet(isPresented: $model.showAttribution) { AttributionView() }
+            .sheet(isPresented: $model.showCompare) { CompareWalksSheet(model: model, store: walkBlurbs) }
             .sheet(item: $model.placeCard) { card in PlaceCardSheet(card: card, content: model.cardContent[card.id], translations: translations,
                                                                          appleName: appleNames.names[card.id], appleItem: appleNames.items[card.id]) }
             .fullScreenCover(isPresented: $model.showPhoto) { PhotoView(model: model) }
@@ -72,8 +74,17 @@ struct ContentView: View {
                 if model.info != nil {
                     HStack {
                         Text(model.routeReadout).font(.subheadline.weight(.semibold)).monospacedDigit()
+                            .lineLimit(1).minimumScaleFactor(0.8)
                             .accessibilityIdentifier("routeReadout")
-                        Spacer()
+                        Spacer(minLength: 4)
+                        if walkBlurbs.walks.count > 1 {
+                            Button { model.showCompare = true } label: {
+                                Label("\(walkBlurbs.walks.count) walks", systemImage: "arrow.triangle.branch")
+                                    .font(.footnote.weight(.semibold)).lineLimit(1)
+                            }
+                            .buttonStyle(.bordered).controlSize(.small)
+                            .accessibilityIdentifier("compareWalks")
+                        }
                         Button { model.fitRequest += 1 } label: { Image(systemName: "arrow.up.left.and.arrow.down.right") }
                             .accessibilityLabel("Show the whole walk")
                     }

@@ -19,6 +19,14 @@ final class TourGuideUITests: XCTestCase {
         return r.label
     }
 
+    /// A sheet opens at the medium detent; its lazy list only builds the rows on screen.
+    func expandSheet(_ app: XCUIApplication, _ title: String) {
+        let bar = app.navigationBars[title]
+        XCTAssertTrue(bar.waitForExistence(timeout: 5))
+        let from = bar.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        from.press(forDuration: 0.1, thenDragTo: app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.05)))
+    }
+
     func shoot(_ app: XCUIApplication, _ name: String) {
         let a = XCTAttachment(screenshot: app.screenshot()); a.name = name; a.lifetime = .keepAlways; add(a)
     }
@@ -105,6 +113,71 @@ final class TourGuideUITests: XCTestCase {
         let oyama = app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH 'Oyama-jinja Shrine,' AND value == 'selected'")).firstMatch
         XCTAssertTrue(oyama.waitForExistence(timeout: 5), "selection moves to the new sight")
         shoot(app, "card-tap-oyama")
+    }
+
+    /// PRD §8.13: the slider's distinct walks side by side; tapping one walks it.
+    func testCompareWalksListsFourWalks() {
+        let app = launch(slack: 0.1, extra: ["-uiTestWalkBlurbs", "canned"])
+        _ = readout(app)
+        let button = app.buttons["compareWalks"]
+        XCTAssertTrue(button.waitForExistence(timeout: 10))
+        XCTAssertEqual(button.label, "4 walks")
+        button.tap()
+        expandSheet(app, "Compare walks")
+        let rows = (0..<4).map { app.descendants(matching: .any)["walk-\($0)"] }
+        XCTAssertTrue(rows[3].waitForExistence(timeout: 5))
+        XCTAssertTrue(rows[0].label.hasPrefix("Direct Route"), rows[0].label)
+        XCTAssertTrue(rows[0].label.contains("36 min · 2.9 km · 1 sight · direct"), rows[0].label)
+        XCTAssertTrue(rows[1].label.contains("Current walk"), "slack 0.1 is the Nagamachi walk: \(rows[1].label)")
+        XCTAssertTrue(rows[3].label.hasPrefix("Kenroku-en and Museum Walk"), rows[3].label)
+        XCTAssertTrue(rows[3].label.contains("47 min · 3.9 km · 8 sights · +12 min"), rows[3].label)
+        XCTAssertTrue(app.descendants(matching: .any)["compareFooter"].label.contains("Apple Intelligence"))
+        shoot(app, "compare-walks")
+        rows[3].tap()
+        let moved = NSPredicate(format: "label == '47 min · 3.9 km · 8 sights · +12 min'")
+        expectation(for: moved, evaluatedWith: app.staticTexts["routeReadout"]); waitForExpectations(timeout: 10)
+        XCTAssertLessThan(app.sliders["slackSlider"].normalizedSliderPosition, 0.2, "the slider moved to the Kenroku-en loop")
+    }
+
+    /// No Apple Intelligence (the owner's iPhone 14 Pro): the same walks, code titles, a plain footer.
+    func testCompareWalksWithoutAppleIntelligence() {
+        let app = launch(slack: 0.1, extra: ["-uiTestWalkBlurbs", "none"])
+        _ = readout(app)
+        let button = app.buttons["compareWalks"]
+        XCTAssertTrue(button.waitForExistence(timeout: 10))
+        XCTAssertEqual(button.label, "4 walks")
+        button.tap()
+        expandSheet(app, "Compare walks")
+        let last = app.descendants(matching: .any)["walk-3"]
+        XCTAssertTrue(last.waitForExistence(timeout: 5))
+        // No title: the row leads with the numbers, then the sights.
+        XCTAssertTrue(last.label.hasPrefix("47 min · 3.9 km · 8 sights · +12 min"), last.label)
+        XCTAssertTrue(last.label.contains("Kenroku-en Park"), last.label)
+        XCTAssertFalse(last.label.contains("Museum Walk"))
+        XCTAssertTrue(app.descendants(matching: .any)["compareFooter"].label.contains("can't name walks"))
+        shoot(app, "compare-walks-no-ai")
+    }
+
+    /// The real on-device model, opt-in (TG_LIVE_MODEL=1): greedy decoding makes it repeatable, but
+    /// it needs Apple Intelligence on the host, so the default suite stays hermetic.
+    func testCompareWalksLiveModel() throws {
+        guard ProcessInfo.processInfo.environment["TG_LIVE_MODEL"] == "1" else { throw XCTSkip("set TG_LIVE_MODEL=1") }
+        let app = launch(slack: 0.1, extra: ["-uiTestWalkBlurbs", "live"])
+        _ = readout(app)
+        let button = app.buttons["compareWalks"]
+        XCTAssertTrue(button.waitForExistence(timeout: 10))
+        button.tap()
+        expandSheet(app, "Compare walks")
+        let footer = app.descendants(matching: .any)["compareFooter"]
+        let settled = NSPredicate(format: "label CONTAINS 'written on this iPhone' OR label CONTAINS \"can't\" OR label CONTAINS \"couldn't\" OR label CONTAINS 'Turn on' OR label CONTAINS 'downloading'")
+        expectation(for: settled, evaluatedWith: footer); waitForExpectations(timeout: 60)
+        shoot(app, "compare-walks-live")
+        print("LIVE footer: \(footer.label)")
+        for i in 0..<4 { print("LIVE walk-\(i): \(app.descendants(matching: .any)["walk-\(i)"].label)") }
+        if footer.label.contains("written on this iPhone") {
+            let first = app.descendants(matching: .any)["walk-0"].label
+            XCTAssertFalse(first.first?.isNumber ?? true, "a title leads the row: \(first)")
+        }
     }
 
     /// PRD §5 step 8: the fastest path while the full corridor loads; no slider, no cards.

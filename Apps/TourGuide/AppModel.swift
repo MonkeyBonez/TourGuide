@@ -40,6 +40,7 @@ final class AppModel: ObservableObject {
     @Published var searchingStart = false
     @Published var showPhoto = false
     @Published var showAttribution = false
+    @Published var showCompare = false
 
     // Map redraw requests.
     @Published var routeVersion = 0
@@ -51,6 +52,7 @@ final class AppModel: ObservableObject {
     let service = TourService()
     let translations = TranslationStore()
     let appleNames = AppleNameStore(disabled: UserDefaults.standard.string(forKey: "uiTestFixture") != nil)
+    let walkBlurbs = WalkDescriptionStore()
     private let enricher = CardEnricher(transport: URLSessionTransport(requestTimeout: 20, resourceTimeout: 40))
     private var loadTask: Task<Void, Never>?
     private var fastTask: Task<Void, Never>?
@@ -81,11 +83,18 @@ final class AppModel: ObservableObject {
 
     var routeReadout: String {
         guard let r = snapshot, let info else { return "" }
-        let extra = r.seconds - info.directSeconds
-        var parts = ["\(Self.minutes(r.seconds)) min", String(format: "%.1f km", r.metres / 1000),
-                     "\(r.cards.count) sight\(r.cards.count == 1 ? "" : "s")"]
-        parts.append(extra < 30 ? (r.slack < 0.005 ? "direct" : "no extra time") : "+\(Self.minutes(extra)) min")
+        return Self.readout(seconds: r.seconds, metres: r.metres, sights: r.cards.count, slack: r.slack, directSeconds: info.directSeconds)
+    }
+    /// One format for the panel and the "Compare walks" rows, so they agree to the character.
+    static func readout(seconds: Double, metres: Double, sights: Int, slack: Double, directSeconds: Double) -> String {
+        let extra = seconds - directSeconds
+        var parts = ["\(minutes(seconds)) min", String(format: "%.1f km", metres / 1000), "\(sights) sight\(sights == 1 ? "" : "s")"]
+        parts.append(extra < 30 ? (slack < 0.005 ? "direct" : "no extra time") : "+\(minutes(extra)) min")
         return parts.joined(separator: " · ")
+    }
+    func readout(for w: WalkOption) -> String {
+        Self.readout(seconds: w.seconds, metres: w.metres, sights: w.tier1Ids.count, slack: w.slack,
+                     directSeconds: info?.directSeconds ?? w.seconds - w.extraSeconds)
     }
     var fastReadout: String {
         guard let f = fastSnapshot else { return "" }
@@ -137,6 +146,7 @@ final class AppModel: ObservableObject {
         loadTask?.cancel(); fastTask?.cancel()
         snapshot = nil; fastSnapshot = nil; info = nil; degraded = nil; cardContent = [:]
         clearSelection()
+        walkBlurbs.reset()
         routeVersion += 1; pinsVersion += 1
         phase = .fetching("Fetching streets and sights…")
         fastTask = Task { [weak self] in await self?.loadFastest(from: a, to: destination, pace: pace, maxSlack: maxSlack, fixture: fixture) }
@@ -165,6 +175,11 @@ final class AppModel: ObservableObject {
                 self.phase = .ready
                 await self.reroute(fit: true)
                 self.fastSnapshot = nil
+                // Compare walks (PRD §8.13): facts now, Apple Intelligence's words as they land.
+                if let o = try? await self.service.walkOptions(maxSlack: maxSlack), !Task.isCancelled {
+                    self.walkBlurbs.load(walks: o.walks, context: o.context,
+                                         cacheKey: WalkDescriptionStore.cacheKey(bbox: o.bbox, maxSlack: maxSlack, pace: pace))
+                }
             } catch is CancellationError {
             } catch let e as SessionError {
                 self.phase = .noRoute(e.errorDescription ?? "No route.")
@@ -256,6 +271,21 @@ final class AppModel: ObservableObject {
                 if let ex = content.extract, content.extractLang != "en" { self.translations.request([ex]) }
             }
         }
+    }
+
+    // MARK: Compare walks
+
+    /// The walk on screen: the one passing the same Tier-1 sights (the dedupe rule itself; the
+    /// default slack 0.10 sits exactly between two walks, so distance can't decide).
+    func isCurrent(_ w: WalkOption) -> Bool {
+        if let r = snapshot { return Set(r.cards.map(\.id)) == w.tier1Ids }
+        return false
+    }
+
+    /// Walk this one. A no-op on the current walk, so tapping it never changes streets.
+    func choose(_ w: WalkOption) {
+        guard !isCurrent(w) else { return }
+        setSlack(w.slack)
     }
 
     // MARK: Settings

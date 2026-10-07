@@ -39,5 +39,10 @@ Layout: `Engine/` (pinned copy of the Like Water engine, LikeWater @ 497e141 —
   nodes: yes") or `tgtool fast <A> <B> --no-cache` (live, hedged mirrors).
 - Apple names (PRD §8.10): `tgtool applenames kanazawa` — MapKit on the Mac; throttles after
   ~50 searches, wait a minute between runs.
+- Walk titles (PRD §8.13): `tgtool describe kanazawa --matrix [--variants U,V] [--runs 5]` runs
+  the on-device prompt experiment (Mac only, Apple Intelligence on; ~6 min for two variants).
+  A prompt change bumps `WalkFacts.promptVersion`, re-runs the matrix, and re-records
+  `expected_prompts.txt` with `TG_RECORD_PROMPTS=1 swift test --filter WalkFactsTests`.
+  `TEST_RUNNER_TG_LIVE_MODEL=1` enables the live UI test (on the simulator it ends on the "couldn't name" footer: no model assets).
 - App: `xcodegen generate`, open `TourGuide.xcodeproj`, or `scripts/install_phone.sh`.
 - UI tests: `xcodebuild -project TourGuide.xcodeproj -scheme TourGuide -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17 Pro' test`.

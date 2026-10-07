@@ -48,6 +48,7 @@ struct SettingsSheet: View {
     @ObservedObject var model: AppModel
     @ObservedObject var translations: TranslationStore
     @ObservedObject var appleNames: AppleNameStore
+    @ObservedObject var walkBlurbs: WalkDescriptionStore
     @Environment(\.dismiss) private var dismiss
     @State private var key = ""
     @State private var keyStatus = ""
@@ -68,6 +69,12 @@ struct SettingsSheet: View {
                     }
                     Button("Load the Kanazawa demo (no network)") { model.loadDemo(); dismiss() }
                         .accessibilityIdentifier("settingsDemo")
+                }
+                Section {
+                    Toggle("Name walks on this iPhone", isOn: $walkBlurbs.enabled)
+                    if !walkBlurbs.footer.isEmpty { Text(walkBlurbs.footer).font(.caption).foregroundStyle(.secondary) }
+                } header: { Text("Apple Intelligence") } footer: {
+                    Text("Titles for \"Compare walks\", written on this iPhone. Nothing is sent anywhere; no key needed.")
                 }
                 Section {
                     Toggle("Apple Maps' English names", isOn: $appleNames.enabled)
@@ -123,6 +130,7 @@ struct AttributionView: View {
                 credit("Map, place names and place cards", "Apple Maps.", nil)
                 credit("Routing", "Our own corridor router (the Like Water engine), not Apple's or Google's.", "https://github.com/MonkeyBonez/TourGuide")
                 credit("Translation", "Apple's on-device Translation. Translated text is marked.", nil)
+                credit("Walk titles", "Apple Intelligence, written on this iPhone; nothing is sent anywhere.", nil)
             }
             .navigationTitle("Data and credits").navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }

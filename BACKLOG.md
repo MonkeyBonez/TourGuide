@@ -16,14 +16,19 @@ Deferred work, with enough context to pick up cold. Done items move to LEARNINGS
   is loopback (desktop).
 - **Scoring grid.** Scoring is a brute-force sight × edge loop (fine on Kanazawa). Add an edge
   grid if a phone takes > 2 s.
-- **V1: OpenAI describes the walks** (PRD §8.13, owner's call 6 Oct 2026). Why: the slider is
-  abstract; the user is choosing between a few different walks. What: after the full load, sweep
-  the slider (0.05 steps through `SliderLaw`), dedupe walks by their Tier-1 id set (Kanazawa → 4),
-  one Chat Completions `json_object` call through `OpenAIClient` with each walk's minutes, extra
-  minutes, km and sights in order → `[{slack, title, text}]`; "Compare walks" sheet beside the
-  readout, tap a row → `setSlack`. Disk cache keyed by `TourPipeline.cacheKey(bbox)` + maxSlack +
-  pace. Needs a saved key; no key or failure → button hidden. Tests offline: dedupe and prompt
-  shape on the fixture, scripted reply parsing. Effort: M.
+- **Walk titles on a real eligible iPhone.** The model ran only on the Mac (`tgtool describe`);
+  the iOS 26 simulator reports `.available` then fails every call (ModelManagerError 1026, no
+  model assets) and the owner's 14 Pro isn't eligible. Trigger: an iPhone 15 Pro or later. Check
+  titles match the Mac's (greedy), latency per walk, and the gate's drop rate. Effort: S.
+- **Walk titles: a second city.** The variant was chosen on Kanazawa's four walks only. Rerun
+  `tgtool describe <box> --matrix --variants U,V` on another corridor before trusting 100 %.
+- **Speak the chosen walk's title** (`TTSService` exists in Photo/). Effort: S.
+- **Near-duplicate Tier-1 names** ("Nagamachi Samurais District" / "…Samurai District", Nomura ×3)
+  are collapsed only for the prompt (`WalkFacts.dedupe`); fold them in `WikidataMatcher.dedupe`
+  so cards and counts agree. Effort: S.
+- **Wikidata labels that name a different thing.** The box bridge gave 広坂緑地 the label
+  "Shiinoki Cultural Complex" and Chuo Park "Ishikawa Modern Literature Museum"; prompt names
+  prefer OSM `name`, but the bridge's name match is loose for small parks. Effort: S.
 - **Snap A and B by cost, not by distance.** Kanazawa Station snaps to the nearest graph node
   (27 m north), and the direct route from there loops west round the station: 2,941 m / 35.6
   min. From a node 46 m east it is 2,387 m / 28.8 min (`tgtool fast kanazawa --buffer 150`

@@ -105,6 +105,13 @@ actor TourService {
                              computeMs: r.computeMs)
     }
 
+    /// The distinct walks along the slider for "Compare walks" (PRD §8.13), with the facts the
+    /// on-device model is given and the box's bbox for the blurb cache key. ~0.2 s on a Mac.
+    func walkOptions(maxSlack: Double) throws -> (walks: [WalkOption], context: WalkFacts.Context, bbox: [Double]) {
+        guard let s = session, let box else { throw SessionError.noRoute }
+        return (try WalkFacts.distinctWalks(session: s, maxSlack: maxSlack), WalkFacts.context(session: s), box.bbox)
+    }
+
     /// Sights near a point, nearest first (the photo's context).
     func sights(near c: CLLocationCoordinate2D, within metres: Double, limit: Int) -> [String] {
         guard let s = session else { return [] }

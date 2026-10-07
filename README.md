@@ -34,8 +34,9 @@ swift run -c release --package-path Core tgtool route /tmp/kz.json
 xcodegen generate && open TourGuide.xcodeproj
 ```
 
-The photo mode uses your own OpenAI API key, stored in the iOS Keychain. The repository contains
-no keys.
+"Compare walks" lists the few different walks the slider holds; on an iPhone with Apple
+Intelligence each gets a short title written on the phone (no key, nothing sent). The photo mode
+uses your own OpenAI API key, stored in the iOS Keychain. The repository contains no keys.
 
 ## Licence
 

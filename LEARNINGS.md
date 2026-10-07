@@ -174,3 +174,66 @@ also accepts Apple's park category; and **MapKit throttles** (`MKError.loadingTh
 after ~80 back-to-back searches, and again after ~50 at 1.2 s spacing. The store spaces lookups
 1.5 s, and a throttled search goes back on the queue after 30 s instead of being cached as "Apple
 has nothing".
+
+## 8. Apple's on-device model names the walks (PRD §8.13, 7 Oct 2026)
+
+The owner switched "describe the walks" from OpenAI to Apple Intelligence's on-device model
+(Foundation Models, iOS 26 / macOS 26) and asked what works best for it. Method: `tgtool describe
+kanazawa --matrix` runs every prompt variant × sampling × 5 runs over the 4 distinct Kanazawa walks
+on this Mac (macOS 26.5.1) and scores each output with `WalkBlurbScore` — checks a machine can run:
+no numbers, title 2–6 words, names a sight the walk adds, no sight that isn't on the walk, no filler
+word, no false or invented comparison, not just the sight list again, a title word that tells this
+walk from the others. PASS = every check. Five rounds; each round's scorer or prompt change came
+from reading the previous round's outputs.
+
+| round | what changed | best cell | PASS |
+|---|---|---|---|
+| 0 (prototype) | one prompt for all walks; numbers in the prompt | — | 3 blurbs for 4 walks, "+36 minutes" for a +12 walk |
+| 1 | per walk, no numbers; variants A facts, B +adds/drops, C +Tier-2, D sentence only, E few-shot, F regex title | A greedy | 50 % |
+| 2 | no "shorter route" wording on the direct walk; "name a sight; don't describe streets, crowds, food, atmosphere"; G adds only | D greedy | 100 % (but see round 3) |
+| 3 | + "not a list", + invented size/age comparisons; H + Wikipedia leads; T title only | T greedy | 100 % (but see round 4) |
+| 4 | + "specific": the title must carry a distinctive word of what the walk adds | U (title anchored on the most famous addition) greedy | 100 % |
+| 5 | U listed additions by fame → names strung together; V = only the two best-known additions | **V greedy** | **100 %, 100 % shown after the gate, 0.36 s/walk** |
+
+What the model does, measured:
+- **Numbers in, garbage out.** With minutes in the prompt it reported "+36 minutes", "Add 17
+  minutes" and "it is shorter" for the longest walk. With no digit in any prompt, `noNumbers` was
+  100 % in every cell after. The app prints the numbers.
+- **It copies any example.** A title example inside a `@Guide` description came back verbatim on
+  every walk; a worked example in the instructions (variant E) was copied word for word in 60–100 %
+  of blurbs ("Swings past the moats and gates of Nijo Castle…" for Kanazawa).
+- **More context, more filler.** Tier-2 kinds (C) and Wikipedia leads (H) made it worse: H greedy
+  0 %, "serene atmosphere", "two of the most beautiful parks in Japan". The leads are thin anyway
+  (5 English leads for the route's sights).
+- **It doesn't compare.** Given the adds/drops contrast it counts ("three more temples and four
+  more parks") and calls walks shorter or longer wrongly; asked for all walks at once it compared
+  "Route 3" with "Route 1" and dropped one. One walk per call, fresh session, contrast in code.
+- **Sentences never beat the facts.** Every prose variant either restated the sight list (caught
+  by `notAList` once it existed: D fell from 100 % to 25 %) or invented ("Kenroku-en Park is a
+  famous park that is larger than Chuo Park"). Short titles are what it does reliably — so the
+  app ships titles only, with our numbers and sight list as the description.
+- **Titles need an anchor.** Free titles (T) passed every check but said nothing: "Cultural and
+  Historical Trail" for both the samurai walk and the Kenroku-en loop (`specific` 0 %). Anchored on
+  the walk's best-known new sights they tell the walks apart. With all additions listed by fame it
+  strings them together ("Kanazawa Castle Park + Oyama-jinja Shrine + Shiinoki + …"); with the top
+  two it doesn't.
+- **Greedy beats sampling** for this: V greedy 100 % vs default 85 %, temperature 0.3 worse than
+  both for U. Greedy is also repeatable, which the cache wants.
+- **Regex guides fail** on macOS 26.5.1: `@Guide(…, #/…/#)` and `.pattern(…)` both throw an untyped
+  `GenerationError` -1 (GenerativeError 1020000) on every call, even for `[A-Z][A-Za-z ]+`.
+- **Latency:** titles 0.33–0.45 s a walk; one or two sentences 0.7–1.7 s. With `prewarm()` the
+  first call is no slower than the rest (V greedy: first 0.33 s, mean 0.36 s); no cold-start
+  penalty was measured, so its benefit is unproven, not shown.
+
+The shipped choice (`WalkFacts.chosen` = V, greedy) is pinned by `expected_prompts.txt`. The app
+re-runs the scorer as a **gate**: a title that fails is retried once with sampling, then dropped.
+The runtime facts: the **iOS 26 simulator reports `.available` but every call fails** (ModelManager
+error 1026: "no underlying assets for asset set com.apple.modelcatalog"), so availability is not a
+promise — the store reports "couldn't name these walks" when every call threw, instead of claiming
+titles over bare rows. The owner's iPhone 14 Pro is not eligible (A17 Pro or later), so the
+eligible-phone check is still open (BACKLOG).
+
+Also learned on the way: Wikidata's box bridge gives some small parks another thing's label
+(広坂緑地 → "Shiinoki Cultural Complex", Chuo Park → "Ishikawa Modern Literature Museum"), and the
+four distinct walks along the slider sit at slack 0, 0.02, 0.18 and 0.36 — the Nagamachi walk is
+already reached at 0.02 (+0.1 min).

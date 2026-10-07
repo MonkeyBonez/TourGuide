@@ -12,3 +12,4 @@ Tour Guide fetches everything it shows at the time you plan a walk. None of it i
 - **Map display and place cards**: Apple Maps (MapKit).
 - **Routing**: our own corridor router (the Like Water engine, `Engine/`), not Apple's or Google's.
 - **Translation**: Apple's on-device Translation framework; translated text is marked.
+- **Walk titles**: Apple Intelligence (Foundation Models), written on the iPhone; nothing is sent.

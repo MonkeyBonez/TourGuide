@@ -7,8 +7,11 @@
 //   tgtool fast <lat,lon> <lat,lon> [--buffer 300] [--no-cache]      live narrow fetch → fastest path
 //   tgtool fast kanazawa [--buffer 300]                              the same, cut from the fixture
 //   tgtool applenames box.json [--slacks 0.1,0.5]                    Apple Maps names vs AppleNameGuard
+//   tgtool describe box.json [--variant B] [--runs 1] [--greedy] [--temp 0.7] [--max 0.5]
+//   tgtool describe box.json --matrix [--runs 5] [--temp 0.7]        the prompt experiment (PRD §8.13, LEARNINGS §8)
 import Foundation
 import MapKit
+import FoundationModels
 import LikeWaterEngine
 import TourGuideCore
 
@@ -45,6 +48,8 @@ case "match": try matchCommand()
 case "cards": try await cardsCommand()
 case "fast": try await fastCommand()
 case "applenames": try await appleNamesCommand()
+case "describe":
+    if #available(macOS 26, *) { try await describeCommand() } else { fail("describe needs macOS 26") }
 default: fail("unknown command \(command)")
 }
 
@@ -332,4 +337,118 @@ func matchCommand() throws {
                      best?.0 ?? "-", best?.1 ?? -1, (best?.2 ?? "-").replacingOccurrences(of: "MKPOICategory", with: ""), verdict))
     }
     print("\n\(sights.count) sights (\(japanese) shown under a Japanese name): \(accepted) accepted by the guard; \(loose) had a nearest result within 150 m (the old rule)")
+}
+
+// MARK: - describe (PRD §8.13): the on-device prompt experiment
+
+@available(macOS 26, *)
+struct Cell {
+    var variant: WalkFacts.Variant
+    var sampling: WalkSampling
+    var calls = 0, failures: [String: Int] = [:]
+    var latencies: [Double] = [], first: [Double] = []
+    var checks: [WalkBlurbScore.Check: Int] = [:]
+    var passed = 0, distinctRuns = 0, runs = 0, shown = 0
+    var best: (Int, String)? = nil, worst: (Int, String)? = nil
+    var mean: Double { latencies.isEmpty ? 0 : latencies.reduce(0, +) / Double(latencies.count) }
+    var p90: Double { latencies.isEmpty ? 0 : latencies.sorted()[min(latencies.count - 1, Int(Double(latencies.count) * 0.9))] }
+    var firstMean: Double { first.isEmpty ? 0 : first.reduce(0, +) / Double(first.count) }
+    var answered: Int { latencies.count }
+    func rate(_ n: Int) -> String { answered == 0 ? "  -" : String(format: "%3.0f", 100 * Double(n) / Double(answered)) }
+    var pass: Double { calls == 0 ? 0 : Double(passed) / Double(calls) }
+}
+
+@available(macOS 26, *)
+@MainActor func describeCommand() async throws {
+    let maxSlack = Double(opt("--max") ?? "0.5")!
+    let matrix = flag("--matrix")
+    let runs = Int(opt("--runs") ?? (matrix ? "5" : "1"))!
+    let temp = opt("--temp").flatMap(Double.init)
+    let greedy = flag("--greedy")
+    let only = opt("--variant").flatMap { v in WalkFacts.Variant.allCases.first { $0.rawValue == v.uppercased() } }
+    guard let path = args.first else { fail("usage: tgtool describe box.json|kanazawa [--matrix]") }
+    print("model availability: \(OnDeviceWalkDescriber.availability.rawValue)")
+    guard OnDeviceWalkDescriber.availability == .available else { return }
+
+    let t0 = CFAbsoluteTimeGetCurrent()
+    let session = try TourSession(box: try loadBox(path), maxSlack: maxSlack)
+    let walks = try WalkFacts.distinctWalks(session: session, maxSlack: maxSlack)
+    var ctx = WalkFacts.context(session: session)
+    // Variant H's notes: English Wikipedia leads saved by `tgtool cards` (the app has them as card content).
+    let cardsPath = opt("--cards") ?? "../Measure/out/cards.json"
+    if let data = try? Data(contentsOf: URL(fileURLWithPath: cardsPath)),
+       let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let routes = root["routes"] as? [[String: Any]] {
+        for r in routes { for c in (r["cards"] as? [[String: Any]] ?? []) {
+            if let id = c["id"] as? String, let ex = c["extract"] as? String, c["lang"] as? String == "en" { ctx.leads[id] = WalkFacts.firstSentence(ex) }
+        } }
+    }
+    print("leads for variant H: \(ctx.leads.count) sights")
+    print(String(format: "%d distinct walks from 21 slider steps in %.0f ms", walks.count, (CFAbsoluteTimeGetCurrent() - t0) * 1000))
+    for w in walks {
+        print(String(format: "  slack %.3f · %.0f m · +%.1f min · %@", w.slack, w.metres, w.extraSeconds / 60, w.tier1.map(\.name).joined(separator: " → ")))
+    }
+
+    let picked = opt("--variants").map { $0.split(separator: ",").compactMap { v in WalkFacts.Variant.allCases.first { $0.rawValue == v.uppercased() } } }
+    let variants = matrix ? (picked ?? WalkFacts.Variant.allCases) : [only ?? .contrast]
+    var samplings: [WalkSampling] = matrix ? [.default, .greedy] : [greedy ? .greedy : (temp.map { .temperature($0) } ?? .default)]
+    if matrix, let t = temp { samplings.append(.temperature(t)) }
+    var cells: [Cell] = []
+    for v in variants {
+        let names = v == .fewShot ? WalkFacts.context(session: session).allSightNames + WalkFacts.exampleNames : WalkFacts.context(session: session).allSightNames
+        ctx.allSightNames = names
+        for s in samplings {
+            var cell = Cell(variant: v, sampling: s)
+            for run in 0..<runs {
+                let d = OnDeviceWalkDescriber(variant: v, sampling: s)
+                d.prewarm()
+                var titles: [String] = []
+                for (i, w) in walks.enumerated() {
+                    cell.calls += 1
+                    let t = CFAbsoluteTimeGetCurrent()
+                    do {
+                        let b = try await d.describe(w, context: ctx)
+                        let dt = CFAbsoluteTimeGetCurrent() - t
+                        cell.latencies.append(dt); if i == 0 { cell.first.append(dt) }
+                        titles.append(b.title)
+                        let r = WalkBlurbScore.check(b, option: w, allSightNames: ctx.allSightNames)
+                        let ok = r.values.filter { $0 }.count
+                        for (k, v) in r where v { cell.checks[k, default: 0] += 1 }
+                        if WalkBlurbScore.passes(r) { cell.passed += 1; cell.shown += 1 }
+                        else if v.rawValue >= "T" {
+                            // The app's gate: one retry with sampling, else no title.
+                            let retry = OnDeviceWalkDescriber(variant: v, sampling: .default)
+                            if let b2 = try? await retry.describe(w, context: ctx),
+                               WalkBlurbScore.titleIsShowable(b2, option: w, allSightNames: ctx.allSightNames) { cell.shown += 1 }
+                        }
+                        let line = "\(b.title) — \(b.text)" + (r.filter { !$0.value }.isEmpty ? "" : "  ✗ " + r.filter { !$0.value }.map(\.key.rawValue).sorted().joined(separator: ","))
+                        if cell.best == nil || ok > cell.best!.0 { cell.best = (ok, line) }
+                        if cell.worst == nil || ok < cell.worst!.0 { cell.worst = (ok, line) }
+                        if !matrix {
+                            print(String(format: "\n[run %d · walk %d · %.1f s] %@", run + 1, i + 1, dt, line))
+                            print("  prompt: " + WalkFacts.prompt(for: w, variant: v, context: ctx))
+                        }
+                    } catch {
+                        cell.failures["\(error)".components(separatedBy: "(").first ?? "\(error)", default: 0] += 1
+                        if !matrix { print("\n[run \(run + 1) · walk \(i + 1)] failed: \(error)") }
+                    }
+                }
+                cell.runs += 1
+                if titles.count == walks.count && WalkBlurbScore.distinctTitles(titles) { cell.distinctRuns += 1 }
+            }
+            // A blurb only passes overall if its run's titles were also distinct: scale by the distinct-run share.
+            cells.append(cell)
+            if matrix { print(String(format: "  done %@ / %@: PASS %.0f %%", v.label, s.description, cell.pass * 100)) }
+        }
+    }
+
+    print("\nvariant           sampling   calls fail  mean_s  p90_s first_s  noNum title names foreign filler compare notList specific  distinct  PASS  gated")
+    for c in cells {
+        let ch = WalkBlurbScore.Check.allCases.map { c.rate(c.checks[$0] ?? 0) }
+        print(String(format: "%-17@ %-9@ %5d %4d  %6.2f %6.2f %7.2f   %@   %@   %@   %@    %@    %@    %@     %@   %3d/%-3d  %3.0f %%  %3.0f %%",
+                     c.variant.label, c.sampling.description, c.calls, c.failures.values.reduce(0, +), c.mean, c.p90, c.firstMean,
+                     ch[0], ch[1], ch[2], ch[3], ch[4], ch[5], ch[6], ch[7], c.distinctRuns, c.runs, c.pass * 100, c.calls == 0 ? 0 : 100 * Double(c.shown) / Double(c.calls)))
+        if !c.failures.isEmpty { print("    failures: " + c.failures.map { "\($0.key) ×\($0.value)" }.joined(separator: ", ")) }
+        if let b = c.best { print("    best:  " + b.1) }
+        if let w = c.worst { print("    worst: " + w.1) }
+    }
 }
