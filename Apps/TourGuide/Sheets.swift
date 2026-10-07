@@ -47,6 +47,7 @@ struct SearchSheet: View {
 struct SettingsSheet: View {
     @ObservedObject var model: AppModel
     @ObservedObject var translations: TranslationStore
+    @ObservedObject var appleNames: AppleNameStore
     @Environment(\.dismiss) private var dismiss
     @State private var key = ""
     @State private var keyStatus = ""
@@ -59,7 +60,7 @@ struct SettingsSheet: View {
                     Picker("Pace", selection: Binding(get: { model.pace }, set: { model.setPace($0) })) {
                         Text("Relaxed").tag(1.1); Text("Normal").tag(1.4); Text("Brisk").tag(1.7)
                     }
-                    Picker("Slider's right end", selection: Binding(get: { model.maxSlack }, set: { model.setMaxSlack($0) })) {
+                    Picker("Slider's left end", selection: Binding(get: { model.maxSlack }, set: { model.setMaxSlack($0) })) {
                         Text("+25 % distance").tag(0.25); Text("+50 % distance").tag(0.5); Text("+100 % distance").tag(1.0)
                     }
                     Picker("Long-press sets", selection: $model.longPressTarget) {
@@ -69,10 +70,11 @@ struct SettingsSheet: View {
                         .accessibilityIdentifier("settingsDemo")
                 }
                 Section {
+                    Toggle("Apple Maps' English names", isOn: $appleNames.enabled)
                     Toggle("Translate Japanese text", isOn: $translations.enabled)
                     if !translations.status.isEmpty { Text(translations.status).font(.caption).foregroundStyle(.secondary) }
                 } header: { Text("Translation") } footer: {
-                    Text("On this iPhone, with Apple's Translation. The first time, iOS downloads Japanese (a few minutes). Translated text is marked.")
+                    Text("Names: Apple Maps' English name for a place when it clearly is the same place. Other text: on this iPhone, with Apple's Translation; the first time, iOS downloads Japanese (a few minutes). Translated text is marked.")
                 }
                 Section {
                     SecureField("sk-…", text: $key).textContentType(.password).autocorrectionDisabled().textInputAutocapitalization(.never)
@@ -118,7 +120,7 @@ struct AttributionView: View {
                 credit("Fame and facts", "Wikidata, CC0.", "https://www.wikidata.org")
                 credit("Card text", "Wikipedia contributors, CC BY-SA 4.0. Each card links to its article.", "https://en.wikipedia.org/wiki/Wikipedia:Copyrights")
                 credit("Card photos", "Wikimedia Commons. Each photo's author and licence are on its Commons page.", "https://commons.wikimedia.org")
-                credit("Map and place cards", "Apple Maps.", nil)
+                credit("Map, place names and place cards", "Apple Maps.", nil)
                 credit("Routing", "Our own corridor router (the Like Water engine), not Apple's or Google's.", "https://github.com/MonkeyBonez/TourGuide")
                 credit("Translation", "Apple's on-device Translation. Translated text is marked.", nil)
             }
@@ -141,6 +143,8 @@ struct PlaceCardSheet: View {
     let card: SightCard
     let content: CardContent?
     @ObservedObject var translations: TranslationStore
+    var appleName: String? = nil
+    var appleItem: MKMapItem? = nil
     @State private var item: MKMapItem?
     @State private var searched = false
     @Environment(\.dismiss) private var dismiss
@@ -153,7 +157,7 @@ struct PlaceCardSheet: View {
                 NavigationStack {
                     List {
                         Section {
-                            NameLine(poi: card.poi, translations: translations, font: .title3.weight(.semibold))
+                            NameLine(poi: card.poi, translations: translations, appleName: appleName, font: .title3.weight(.semibold))
                             Text([card.poi.kindLabel, card.poi.denomination].compactMap { $0 }.joined(separator: " · ")).foregroundStyle(.secondary)
                             if let d = content?.description ?? card.poi.wdDescription { Text(d) }
                             if let ex = content?.extract { Text(translations.translated[ex] ?? ex).font(.callout) }
@@ -180,6 +184,7 @@ struct PlaceCardSheet: View {
     /// keep the nearest result within 150 m.
     private func findAppleItem() async {
         defer { searched = true }
+        if let appleItem { item = appleItem; return }
         let here = CLLocation(latitude: card.poi.lat, longitude: card.poi.lon)
         for q in [card.poi.nameLocal, card.poi.name].compactMap({ $0 }) {
             let r = MKLocalSearch.Request()

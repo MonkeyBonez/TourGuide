@@ -59,6 +59,26 @@ actor TourService {
         try await pipeline.fetchBox(from: a, to: b, maxSlack: maxSlack, progress: progress)
     }
 
+    /// The full corridor from the disk cache, if fetched before: then there is no fastest-path step.
+    func cachedBox(from a: Place, to b: Place, maxSlack: Double) async -> FetchBox? {
+        await pipeline.cachedBox(from: a, to: b, maxSlack: maxSlack)
+    }
+
+    /// The narrow walk-only fetch for the fastest path (PRD §5 step 8).
+    func fetchWalkNetwork(from a: Place, to b: Place) async throws -> FetchBox {
+        try await pipeline.fetchWalkNetwork(from: a, to: b)
+    }
+
+    /// The fastest path on a narrow, sight-less box: a throwaway session at slack 0. Never
+    /// touches the real session, so it can't race the full load.
+    func loadFast(box: FetchBox, pace: Double) throws -> RouteSnapshot {
+        let s = try TourSession(box: box, pace: PaceModel(pace: WalkingPace(metresPerSecond: pace)), maxSlack: 0)
+        let r = try s.route(slack: 0)
+        return RouteSnapshot(slack: 0, coordinates: r.coordinates.map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lon) },
+                             metres: r.metres, seconds: r.seconds, crossings: r.crossings, cards: [], named: [],
+                             computeMs: s.buildMs + r.computeMs)
+    }
+
     /// Build the session (graph, interest, labels) for a box. ~1 s on a phone for Kanazawa.
     func load(box: FetchBox, maxSlack: Double, pace: Double) throws -> SessionInfo {
         generation += 1

@@ -5,8 +5,6 @@ Deferred work, with enough context to pick up cold. Done items move to LEARNINGS
 - **Hard waypoints** (PRD §8.8). The router's no-U-turn rule means a sight up a dead-end path is
   never passed (Kanazawa: 全性寺, Ishikawa Prefectural Museum of Art touch no street within 30 m).
   Trigger: a user taps such a pin. Effort: route A→sight→B as two corridor searches, M.
-- **Square-law slider** (§8.1). The owner's own walk is slack 0.1 (+0.2 min); the big loops are
-  0.2–0.5. The low end needs the travel. Trigger: first on-device use. Effort: S.
 - **Live re-route per GPS fix.** V0 fixes A when the route is planned. LikeWater's
   `CorridorService` (labels cover rule, hysteresis via `RouteEngine.evaluate/shouldKeep`) is the
   pattern. Effort: M.
@@ -18,11 +16,21 @@ Deferred work, with enough context to pick up cold. Done items move to LEARNINGS
   is loopback (desktop).
 - **Scoring grid.** Scoring is a brute-force sight × edge loop (fine on Kanazawa). Add an edge
   grid if a phone takes > 2 s.
-- **Apple names for Tier-2 sights.** Apple Maps had 22 of 40 route sights with English names
-  (LEARNINGS §5); use its name when found instead of translating. Tighten the 150 m guard for
-  small parks. Effort: S.
-- **Fastest path while loading** (PRD §5 step 8, owner's call 6 Oct 2026). Not built yet: the
-  app shows only a banner until the full corridor is in. Plan: a narrow walk-network-only
-  Overpass query (corridor of the straight line, no POIs) → `TourSession` with no sights →
-  route at slack 0 and draw it; hide slider and cards; swap in the full session when it lands.
-  Measure how much faster the narrow query is. Effort: M.
+- **V1: OpenAI describes the walks** (PRD §8.13, owner's call 6 Oct 2026). Why: the slider is
+  abstract; the user is choosing between a few different walks. What: after the full load, sweep
+  the slider (0.05 steps through `SliderLaw`), dedupe walks by their Tier-1 id set (Kanazawa → 4),
+  one Chat Completions `json_object` call through `OpenAIClient` with each walk's minutes, extra
+  minutes, km and sights in order → `[{slack, title, text}]`; "Compare walks" sheet beside the
+  readout, tap a row → `setSlack`. Disk cache keyed by `TourPipeline.cacheKey(bbox)` + maxSlack +
+  pace. Needs a saved key; no key or failure → button hidden. Tests offline: dedupe and prompt
+  shape on the fixture, scripted reply parsing. Effort: M.
+- **Snap A and B by cost, not by distance.** Kanazawa Station snaps to the nearest graph node
+  (27 m north), and the direct route from there loops west round the station: 2,941 m / 35.6
+  min. From a node 46 m east it is 2,387 m / 28.8 min (`tgtool fast kanazawa --buffer 150`
+  found it by accident; LEARNINGS §7). Fix: try the k nearest connected nodes (or the nearest
+  edge's two ends) and keep the one with the least snap + route. It moves every golden number
+  (`expected_table.txt`, the UI test readouts), so it is its own change with a re-measure.
+  Trigger: now — it is a 7-minute error on the demo walk. Effort: S–M.
+- **Fast path for diagonal walks.** The fastest-path box is axis-aligned; a diagonal A→B gets a
+  box near the full ellipse's size. Use an oriented corridor (Overpass `poly:`) if a diagonal
+  walk's fast fetch is slow. Effort: S.

@@ -7,12 +7,13 @@ struct ContentView: View {
     @EnvironmentObject var model: AppModel
 
     var body: some View {
-        Inner(model: model, translations: model.translations)
+        Inner(model: model, translations: model.translations, appleNames: model.appleNames)
     }
 
     private struct Inner: View {
         @ObservedObject var model: AppModel
         @ObservedObject var translations: TranslationStore
+        @ObservedObject var appleNames: AppleNameStore
 
         var body: some View {
             ZStack(alignment: .top) {
@@ -32,9 +33,10 @@ struct ContentView: View {
             }
             .translationTask(translations.configuration) { session in await translations.run(session) }
             .sheet(isPresented: $model.showSearch) { SearchSheet(model: model) }
-            .sheet(isPresented: $model.showSettings) { SettingsSheet(model: model, translations: translations) }
+            .sheet(isPresented: $model.showSettings) { SettingsSheet(model: model, translations: translations, appleNames: appleNames) }
             .sheet(isPresented: $model.showAttribution) { AttributionView() }
-            .sheet(item: $model.placeCard) { card in PlaceCardSheet(card: card, content: model.cardContent[card.id], translations: translations) }
+            .sheet(item: $model.placeCard) { card in PlaceCardSheet(card: card, content: model.cardContent[card.id], translations: translations,
+                                                                         appleName: appleNames.names[card.id], appleItem: appleNames.items[card.id]) }
             .fullScreenCover(isPresented: $model.showPhoto) { PhotoView(model: model) }
         }
 
@@ -76,19 +78,27 @@ struct ContentView: View {
                             .accessibilityLabel("Show the whole walk")
                     }
                     VStack(spacing: 2) {
-                        Slider(value: Binding(get: { model.slack }, set: { model.setSlack($0) }), in: 0...model.maxSlack, step: 0.05)
+                        Slider(value: Binding(get: { model.sliderPosition }, set: { model.setSliderPosition($0) }), in: 0...1, step: 0.05)
                             .accessibilityIdentifier("slackSlider")
                             .accessibilityLabel("Time versus sights")
                             .accessibilityValue(model.routeReadout)
                         HStack {
-                            Text(model.directCaption); Spacer(); Text("More sights · " + model.maxCaption)
+                            Text("More sights · " + model.maxCaption); Spacer(); Text(model.directCaption)
                         }
                         .font(.caption).foregroundStyle(.secondary).monospacedDigit()
                     }
-                    CardsRow(model: model, translations: translations)
+                    CardsRow(model: model, translations: translations, appleNames: appleNames)
                     if model.showTimings {
                         Text(model.timingsText).font(.caption2.monospaced()).foregroundStyle(.secondary)
                             .accessibilityIdentifier("timings")
+                    }
+                } else if model.fastSnapshot != nil {
+                    HStack {
+                        Text(model.fastReadout).font(.subheadline.weight(.semibold)).monospacedDigit()
+                            .accessibilityIdentifier("fastReadout")
+                        Spacer()
+                        Button { model.fitRequest += 1 } label: { Image(systemName: "arrow.up.left.and.arrow.down.right") }
+                            .accessibilityLabel("Show the whole walk")
                     }
                 } else if model.destination == nil {
                     VStack(alignment: .leading, spacing: 6) {
@@ -141,7 +151,8 @@ struct BannerView: View {
         switch banner {
         case .waitingForLocation: return "Waiting for your location. Long-press the map to set a start instead."
         case .fetching(let s): return s
-        case .fetchFailed(let s): return "\(s) No route without the street map."
+        case .fetchFailed(let s, let keepingFast):
+            return keepingFast ? "\(s) Showing the fastest walk; sights couldn't be loaded." : "\(s) No route without the street map."
         case .degraded(let s): return s
         case .noRoute(let s): return s
         }

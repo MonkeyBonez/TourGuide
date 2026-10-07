@@ -118,3 +118,59 @@ callbacks need the main run loop; use `RunLoop.main.run()` and `exit` from the t
 - `xcodebuild -destination id=` wants the hardware UDID, not the CoreDevice identifier that
   `devicectl` prints; `scripts/install_phone.sh` builds for `generic/platform=iOS` and installs
   with devicectl. Installed and launched on the owner's iPhone 14 Pro (iOS 27.0.1).
+
+## 7. Finishing V0: slider flip, highlight, fastest path, Apple names (6 Oct 2026)
+
+**Slider.** The owner flipped it: left = most sights, right = direct. The square law
+(`SliderLaw`: slack = max × (1 − p)²) puts slack 0.1, the owner's walk, at p 0.553 instead of
+0.8; the right half now spans slack 0–0.125 in ten 0.05 steps (a linear slider gave it 2.5).
+`slack` stays the stored value; the slider binds to a derived position, so persistence, launch
+arguments and `setMaxSlack` didn't change. Tests: `SliderLawTests`, `testSliderRightEndIsDirect`,
+`testNagamachiWalkSitsMidSlider`.
+
+**Highlight on card tap.** The OSM rings were already on every area POI (the parser keeps them for
+the polygon viewing distance), so outlining the grounds needed no new data: Kenroku-en, the castle
+park and Oyama outline; Nomura (a node) gets a 60 m halo. MapKit pitfalls:
+- `render` removes every overlay on each slider move, so the highlight is re-added at its end.
+- Removing annotations fires `didDeselect`; without a `rendering` guard each slider move cleared
+  the selection. The deselect handler must check the guard synchronously (a `Task` hop runs
+  after the guard is reset).
+- `MKAnnotationView` selection isn't in the accessibility tree, so the selected pin carries
+  `accessibilityValue = "selected"`; the UI test (and VoiceOver) read that.
+
+**Fastest path while loading** (`tgtool fast`):
+
+| box | area vs ellipse | nodes | direct route |
+|---|---|---|---|
+| 150 m buffer | 14 % | 20 % | **2,387 m** — wrong start snap (46 m vs 27 m) |
+| 200 m | 16 % | 23 % | 2,941 m, same nodes |
+| 300 m (used) | 22 % | 30 % | 2,941 m, same nodes |
+
+Kanazawa's direct route strays at most 221 m from the A→B line. Live, from the Mac:
+
+| fetch | time |
+|---|---|
+| fast query, mirrors in turn | 15.5 s (mail.ru) · 23 s (mail.ru timed out at 20 s, then overpass-api.de) |
+| fast query, hedged 3 s apart | 5.0 · 6.6 · 12.6 · 14.1 s |
+| full corridor | 51 s (mail.ru 504 after 44 s, then overpass-api.de) |
+
+Hedging is cheap for a small query and turns one hung mirror into a 3 s cost. Cancelled losers
+surface as `URLError.cancelled` (-999) and must not be reported as mirror failures. The map fit
+had to learn the panel's height: with only the fastest-path readout, the 470 pt bottom inset
+left the route tiny at the top.
+
+**The 150 m box found a real snapping bug.** Kanazawa Station snaps to its nearest node, 27 m
+north, from which the direct route loops west round the station: 2,941 m / 35.6 min. A node 46 m
+east gives 2,387 m / 28.8 min (`tgtool route` on the fixture with the start moved there). Nearest-
+node snapping can cost minutes at a station; the measured walk factor 1.40 is partly this.
+Not fixed here: it moves every golden number. In BACKLOG ("snap by cost").
+
+**Apple names** (`tgtool applenames kanazawa`, guard = `AppleNameGuard`). The loose rule (nearest
+≤ 150 m) had 19 of 40; the guard accepts 16, and only Japanese-named sights use it: 10 of 22 get
+an Apple name. Rejected correctly: 武蔵ヶ辻小緑地 → a bus stop (category), 長町 → a parking lot,
+照教寺 → "Shoen-ji Temple" 398 m away (a different temple), a sundial 143 m off. Two fixes came
+from the run: Apple calls 木倉町広場 "Kiguracho Hiroba" (a plaza) with category Park, so a park
+also accepts Apple's park category; and **MapKit throttles** (`MKError.loadingThrottled`, code 3)
+after ~80 back-to-back searches, and again after ~50 at 1.2 s spacing. The store spaces lookups
+1.5 s, and a throttled search goes back on the queue after 30 s instead of being cached as "Apple
+has nothing".

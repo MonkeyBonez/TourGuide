@@ -12,7 +12,7 @@ final class AppModel: ObservableObject {
     enum Banner: Equatable {
         case waitingForLocation
         case fetching(String)
-        case fetchFailed(String)
+        case fetchFailed(String, keepingFast: Bool)
         case degraded(String)
         case noRoute(String)
     }
@@ -24,6 +24,8 @@ final class AppModel: ObservableObject {
     @Published var degraded: String?
     @Published var info: SessionInfo?
     @Published var snapshot: RouteSnapshot?
+    /// The fastest path, shown while the full corridor loads (PRD §5 step 8); nil once it's in.
+    @Published var fastSnapshot: RouteSnapshot?
     @Published var slack: Double
     @Published var maxSlack: Double
     @Published var pace: Double
@@ -43,13 +45,15 @@ final class AppModel: ObservableObject {
     @Published var routeVersion = 0
     @Published var pinsVersion = 0
     @Published var fitRequest = 0
-    @Published var centerRequest: (Int, CLLocationCoordinate2D)? = nil
+    @Published var highlightVersion = 0
 
     let location = LocationService()
     let service = TourService()
     let translations = TranslationStore()
+    let appleNames = AppleNameStore(disabled: UserDefaults.standard.string(forKey: "uiTestFixture") != nil)
     private let enricher = CardEnricher(transport: URLSessionTransport(requestTimeout: 20, resourceTimeout: 40))
     private var loadTask: Task<Void, Never>?
+    private var fastTask: Task<Void, Never>?
     private var rerouteTask: Task<Void, Never>?
     private var fixture: String?
     static let fallbackCenter = CLLocationCoordinate2D(latitude: BundledFixtures.kanazawaStart.lat, longitude: BundledFixtures.kanazawaStart.lon)
@@ -69,7 +73,7 @@ final class AppModel: ObservableObject {
         switch phase {
         case .fetching(let s): return .fetching(s)
         case .waiting: return .waitingForLocation
-        case .fetchFailed(let s): return .fetchFailed(s)
+        case .fetchFailed(let s): return .fetchFailed(s, keepingFast: fastSnapshot != nil)
         case .noRoute(let s): return .noRoute(s)
         case .idle, .ready: return degraded.map { .degraded($0) }
         }
@@ -80,8 +84,14 @@ final class AppModel: ObservableObject {
         let extra = r.seconds - info.directSeconds
         var parts = ["\(Self.minutes(r.seconds)) min", String(format: "%.1f km", r.metres / 1000),
                      "\(r.cards.count) sight\(r.cards.count == 1 ? "" : "s")"]
-        parts.append(extra < 30 ? (r.slack == 0 ? "direct" : "no extra time") : "+\(Self.minutes(extra)) min")
+        parts.append(extra < 30 ? (r.slack < 0.005 ? "direct" : "no extra time") : "+\(Self.minutes(extra)) min")
         return parts.joined(separator: " · ")
+    }
+    var fastReadout: String {
+        guard let f = fastSnapshot else { return "" }
+        let base = "Fastest \(Self.minutes(f.seconds)) min · " + String(format: "%.1f km", f.metres / 1000)
+        if case .fetching = phase { return base + " · loading sights…" }
+        return base
     }
     var directCaption: String { info.map { "Direct \(Self.minutes($0.directSeconds)) min" } ?? "Direct" }
     var maxCaption: String { info.map { "+\(Self.minutes($0.maxSlackSeconds - $0.directSeconds)) min" } ?? "More sights" }
@@ -122,13 +132,19 @@ final class AppModel: ObservableObject {
         }
         let a = origin ?? Place(name: "My location", lat: start.latitude, lon: start.longitude)
         let maxSlack = self.maxSlack, pace = self.pace, fixture = self.fixture
-        loadTask?.cancel()
-        snapshot = nil; info = nil; degraded = nil; cardContent = [:]
+        let d = UserDefaults.standard
+        let slowLoad = d.double(forKey: "uiTestSlowLoad"), fullFails = d.string(forKey: "uiTestFullLoadFails") == "1"
+        loadTask?.cancel(); fastTask?.cancel()
+        snapshot = nil; fastSnapshot = nil; info = nil; degraded = nil; cardContent = [:]
+        clearSelection()
         routeVersion += 1; pinsVersion += 1
         phase = .fetching("Fetching streets and sights…")
+        fastTask = Task { [weak self] in await self?.loadFastest(from: a, to: destination, pace: pace, maxSlack: maxSlack, fixture: fixture) }
         loadTask = Task { [weak self] in
             guard let self else { return }
             do {
+                if slowLoad > 0 { try await Task.sleep(nanoseconds: UInt64(slowLoad * 1e9)) }
+                if fullFails { throw OverpassClient.AllMirrorsFailed(reasons: ["UI test"]) }
                 let box: FetchBox
                 if fixture == "kanazawa" {
                     var b = try BundledFixtures.kanazawa()
@@ -144,9 +160,11 @@ final class AppModel: ObservableObject {
                 let info = try await self.service.load(box: box, maxSlack: maxSlack, pace: pace)
                 try Task.checkCancellation()
                 self.info = info
+                self.fastTask?.cancel()
                 self.pinsVersion += 1
                 self.phase = .ready
                 await self.reroute(fit: true)
+                self.fastSnapshot = nil
             } catch is CancellationError {
             } catch let e as SessionError {
                 self.phase = .noRoute(e.errorDescription ?? "No route.")
@@ -154,6 +172,28 @@ final class AppModel: ObservableObject {
                 self.phase = .fetchFailed((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)
             }
         }
+    }
+
+    /// The head start: walk network only, in a narrow box around A→B, routed at slack 0. Skipped
+    /// when the full corridor is cached; any failure is silent (the full load reports).
+    private func loadFastest(from a: Place, to b: Place, pace: Double, maxSlack: Double, fixture: String?) async {
+        do {
+            let narrow: FetchBox
+            if fixture == "kanazawa" {
+                var full = try BundledFixtures.kanazawa()
+                full.start = a; full.end = b
+                narrow = full.cropped(to: LineBuffer.bbox(a: a, b: b))
+            } else {
+                if await service.cachedBox(from: a, to: b, maxSlack: maxSlack) != nil { return }
+                narrow = try await service.fetchWalkNetwork(from: a, to: b)
+            }
+            try Task.checkCancellation()
+            let snap = try await service.loadFast(box: narrow, pace: pace)
+            try Task.checkCancellation()
+            guard info == nil else { return }
+            fastSnapshot = snap
+            routeVersion += 1; fitRequest += 1
+        } catch {}
     }
 
     private func show(_ stage: TourPipeline.Stage) {
@@ -170,6 +210,13 @@ final class AppModel: ObservableObject {
     }
 
     // MARK: Slider
+
+    /// Left (0) = most sights, right (1) = direct; square law (`SliderLaw`).
+    var sliderPosition: Double { SliderLaw.position(slack: slack, maxSlack: maxSlack) }
+    func setSliderPosition(_ p: Double) {
+        let s = SliderLaw.slack(position: p, maxSlack: maxSlack)
+        if s != slack { setSlack(s) }
+    }
 
     func setSlack(_ value: Double) {
         slack = value
@@ -191,6 +238,7 @@ final class AppModel: ObservableObject {
             if fit { fitRequest += 1 }
             enrich(r.cards + r.named)
             translations.request((r.cards + r.named).flatMap { [$0.poi.name, $0.poi.nameLocal] }.compactMap { $0 })
+            appleNames.request(r.cards + r.named)
         } catch {
             phase = .noRoute((error as? LocalizedError)?.errorDescription ?? "No route.")
         }
@@ -223,10 +271,17 @@ final class AppModel: ObservableObject {
     }
     func setShowTimings(_ v: Bool) { showTimings = v; UserDefaults.standard.set(v, forKey: "showTimings") }
 
+    /// Card or pin tap: outline the sight's grounds (or a halo for a point), grow its pin, zoom
+    /// to it (PRD §5.1). Tier 2 also opens Apple's Place Card.
     func select(_ card: SightCard) {
         selectedCard = card.id
-        centerRequest = ((centerRequest?.0 ?? 0) + 1, card.coordinate)
+        highlightVersion += 1
         if card.tier == 2 { placeCard = card }
+    }
+    func clearSelection() {
+        guard selectedCard != nil else { return }
+        selectedCard = nil
+        highlightVersion += 1
     }
 
     // MARK: Photo context

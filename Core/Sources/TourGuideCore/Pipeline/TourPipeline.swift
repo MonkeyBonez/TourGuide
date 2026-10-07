@@ -13,20 +13,61 @@ public actor TourPipeline {
     }
 
     let overpass: OverpassClient
+    /// The fastest-path fetch: short timeouts, hedged across mirrors (`fetchHedged`) — it is a
+    /// head start, not the route, so it gives up quickly and silently.
+    let fastOverpass: OverpassClient
+    let fastStagger: TimeInterval
     let wikidata: WikidataClient
     let cache: DiskCache?
     public static let routeFactor = 1.25
 
     public init(transport: HTTPTransport = URLSessionTransport(requestTimeout: 90, resourceTimeout: 150),
                 wikidataTransport: HTTPTransport? = nil,
-                cache: DiskCache? = DiskCache.named("boxes", ttl: 30 * 86_400), overpassPause: TimeInterval = 10) {
+                cache: DiskCache? = DiskCache.named("boxes", ttl: 30 * 86_400), overpassPause: TimeInterval = 10,
+                fastTransport: HTTPTransport? = nil, fastStagger: TimeInterval = 3) {
+        self.fastStagger = fastStagger
         overpass = OverpassClient(transport: transport, pause: overpassPause)
+        fastOverpass = OverpassClient(transport: fastTransport ?? URLSessionTransport(requestTimeout: 20, resourceTimeout: 30),
+                                      rounds: 1, pause: 0)
         wikidata = WikidataClient(transport: wikidataTransport ?? URLSessionTransport(requestTimeout: 20, resourceTimeout: 40))
         self.cache = cache
     }
 
     public static func cacheKey(bbox: [Double]) -> String {
         "box:\(OverpassQuery.version):" + bbox.map { String(format: "%.5f", $0) }.joined(separator: ",")
+    }
+
+    public static func walkCacheKey(bbox: [Double]) -> String {
+        "walk:\(OverpassQuery.walkVersion):" + bbox.map { String(format: "%.5f", $0) }.joined(separator: ",")
+    }
+
+    /// The full box from the disk cache, if this corridor was fetched before (then the app
+    /// skips the fastest-path step).
+    public func cachedBox(from a: Place, to b: Place, maxSlack: Double = 0.5) -> FetchBox? {
+        let (bbox, _) = SlackEllipse.bbox(a: a, b: b, slack: maxSlack, routeFactor: Self.routeFactor)
+        guard var hit = cache?.load(FetchBox.self, key: Self.cacheKey(bbox: bbox)) else { return nil }
+        hit.start = a; hit.end = b
+        return hit
+    }
+
+    /// The walk network in a narrow box around A→B, no sights (PRD §5 step 8): enough to
+    /// route the fastest path while the full corridor loads.
+    public func fetchWalkNetwork(from a: Place, to b: Place, bufferM: Double = LineBuffer.defaultBufferM,
+                                 useCache: Bool = true,
+                                 progress: @escaping @Sendable (OverpassClient.Progress) -> Void = { _ in }) async throws -> FetchBox {
+        let bbox = LineBuffer.bbox(a: a, b: b, bufferM: bufferM)
+        let key = Self.walkCacheKey(bbox: bbox)
+        if useCache, var hit = cache?.load(FetchBox.self, key: key) {
+            hit.start = a; hit.end = b
+            return hit
+        }
+        let straight = Polygon.metres(a.lat, a.lon, b.lat, b.lon)
+        let data = try await fastOverpass.fetchHedged(query: OverpassQuery.walkOnlyText(bbox: bbox), stagger: fastStagger,
+                                                      progress: progress)
+        let box = try OverpassParser.parse(data, start: a, end: b, bbox: bbox, straightM: straight, slack: 0,
+                                           routeFactor: Self.routeFactor)
+        cache?.store(box, key: key)
+        return box
     }
 
     /// Throws only when Overpass can't be reached or parsed: no streets, no route. A Wikidata

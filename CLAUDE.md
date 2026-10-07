@@ -35,5 +35,9 @@ Layout: `Engine/` (pinned copy of the Like Water engine, LikeWater @ 497e141 —
 - Core: `cd Core && swift test`; `scripts/measure.sh`.
 - Live: `swift run -c release --package-path Core tgtool fetch 36.5781,136.6480 36.5597,136.6534 --out /tmp/kz.json`
   then `tgtool route /tmp/kz.json`.
+- Fastest path (PRD §5 step 8): `tgtool fast kanazawa` (cut from the fixture; must say "same
+  nodes: yes") or `tgtool fast <A> <B> --no-cache` (live, hedged mirrors).
+- Apple names (PRD §8.10): `tgtool applenames kanazawa` — MapKit on the Mac; throttles after
+  ~50 searches, wait a minute between runs.
 - App: `xcodegen generate`, open `TourGuide.xcodeproj`, or `scripts/install_phone.sh`.
 - UI tests: `xcodebuild -project TourGuide.xcodeproj -scheme TourGuide -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17 Pro' test`.

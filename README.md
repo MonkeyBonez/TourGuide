@@ -1,7 +1,7 @@
 # Tour Guide
 
-Walk from A to B the interesting way. A slider trades minutes for sights: at the left end you get
-the direct route; move it right and the route itself changes — which streets you walk — to pass
+Walk from A to B the interesting way. A slider trades minutes for sights: at the right end you get
+the direct route; move it left and the route itself changes — which streets you walk — to pass
 the temples, gardens and old districts worth seeing. Cards show what the route passes, in walking
 order. Point the camera at something to hear what it is.
 

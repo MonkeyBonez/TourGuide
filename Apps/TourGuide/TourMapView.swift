@@ -8,6 +8,9 @@ final class SightAnnotation: MKPointAnnotation {
     var card: SightCard!
     var passed = false
 }
+/// The tapped sight's grounds (one per OSM outer ring) or, for a point sight, a 60 m halo.
+final class HighlightPolygon: MKPolygon { var tier = 1 }
+final class HighlightCircle: MKCircle { var tier = 1 }
 
 /// MKMapView wrapped for SwiftUI (LikeWater's `CorridorMapView` pattern: version counters say
 /// what to redraw, so a slider move only swaps the route line and the sight pins).
@@ -41,16 +44,22 @@ struct TourMapView: UIViewRepresentable {
             c.render(on: map)
         }
         if c.fitted != model.fitRequest { c.fitted = model.fitRequest; c.fit(map: map) }
-        if let (n, coord) = model.centerRequest, c.centered != n {
-            c.centered = n
-            let r = MKCoordinateRegion(center: coord, latitudinalMeters: 350, longitudinalMeters: 350)
-            map.setRegion(r, animated: true)
+        if c.highlighted != model.highlightVersion {
+            c.highlighted = model.highlightVersion
+            c.applyHighlight(map, focus: true)
         }
     }
 
     final class Coordinator: NSObject, MKMapViewDelegate {
         var model: AppModel
-        var pins = -1, route = -1, fitted = 0, centered = 0
+        var pins = -1, route = -1, fitted = 0, highlighted = 0
+        /// True while `render` swaps annotations, so MapKit's deselects don't clear the selection.
+        var rendering = false
+        /// Room for the top bar (+ banner) and the bottom panel, which is short until the full
+        /// corridor is in (fastest path only) and tall with the slider and cards.
+        @MainActor var insets: UIEdgeInsets {
+            UIEdgeInsets(top: model.banner == nil ? 130 : 220, left: 40, bottom: model.info == nil ? 200 : 470, right: 40)
+        }
         init(model: AppModel) { self.model = model }
 
         @MainActor @objc func handleLongPress(_ g: UILongPressGestureRecognizer) {
@@ -59,6 +68,8 @@ struct TourMapView: UIViewRepresentable {
         }
 
         @MainActor func render(on map: MKMapView) {
+            rendering = true
+            defer { rendering = false; applyHighlight(map, focus: false) }
             map.removeOverlays(map.overlays)
             map.removeAnnotations(map.annotations.filter { !($0 is MKUserLocation) })
             var ends: [MKAnnotation] = []
@@ -71,7 +82,7 @@ struct TourMapView: UIViewRepresentable {
                 a.coordinate = CLLocationCoordinate2D(latitude: d.lat, longitude: d.lon); ends.append(a)
             }
             map.addAnnotations(ends)
-            if let r = model.snapshot, r.coordinates.count > 1 {
+            if let r = model.snapshot ?? model.fastSnapshot, r.coordinates.count > 1 {
                 var cs = r.coordinates
                 let casing = RouteLine(coordinates: &cs, count: cs.count); casing.casing = true
                 map.addOverlay(casing, level: .aboveLabels)
@@ -99,15 +110,63 @@ struct TourMapView: UIViewRepresentable {
                 let p = MKMapPoint(c)
                 rect = rect.union(MKMapRect(x: p.x, y: p.y, width: 1, height: 1))
             }
-            model.snapshot?.coordinates.forEach(include)
+            (model.snapshot ?? model.fastSnapshot)?.coordinates.forEach(include)
             model.snapshot?.cards.forEach { include($0.coordinate) }
             if let o = model.effectiveStart { include(o) }
             if let d = model.destination { include(CLLocationCoordinate2D(latitude: d.lat, longitude: d.lon)) }
             guard !rect.isNull else { return }
-            map.setVisibleMapRect(rect, edgePadding: UIEdgeInsets(top: 130, left: 40, bottom: 470, right: 40), animated: true)
+            map.setVisibleMapRect(rect, edgePadding: insets, animated: true)
+        }
+
+        /// Draw the selected sight's grounds and grow its pin; with `focus`, zoom to it.
+        /// Called on a tap and after every `render` (which removes all overlays).
+        @MainActor func applyHighlight(_ map: MKMapView, focus: Bool) {
+            map.removeOverlays(map.overlays.filter { $0 is HighlightPolygon || $0 is HighlightCircle })
+            let sights = map.annotations.compactMap { $0 as? SightAnnotation }
+            let selectedID = model.selectedCard
+            for a in sights { if let v = map.view(for: a) { style(v, a) } }
+            guard let id = selectedID, let card = model.info?.sights.first(where: { $0.id == id }) else {
+                rendering = true
+                map.selectedAnnotations.filter { $0 is SightAnnotation }.forEach { map.deselectAnnotation($0, animated: false) }
+                rendering = false
+                return
+            }
+            var overlays: [MKOverlay] = []
+            for ring in card.poi.rings where ring.count >= 3 {
+                var cs = ring.map { CLLocationCoordinate2D(latitude: $0[0], longitude: $0[1]) }
+                let p = HighlightPolygon(coordinates: &cs, count: cs.count); p.tier = card.tier
+                overlays.append(p)
+            }
+            if overlays.isEmpty {
+                let c = HighlightCircle(center: card.coordinate, radius: 60); c.tier = card.tier
+                overlays.append(c)
+            }
+            map.addOverlays(overlays, level: .aboveRoads)
+            if let a = sights.first(where: { $0.card.id == id }), !map.selectedAnnotations.contains(where: { $0 === a }) {
+                rendering = true
+                map.selectAnnotation(a, animated: true)
+                rendering = false
+            }
+            guard focus else { return }
+            var rect = overlays.reduce(MKMapRect.null) { $0.union($1.boundingMapRect) }
+            rect = rect.union(MKCircle(center: card.coordinate, radius: 150).boundingMapRect)
+            map.setVisibleMapRect(rect, edgePadding: insets, animated: true)
         }
 
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+            if let p = overlay as? HighlightPolygon {
+                let r = MKPolygonRenderer(polygon: p)
+                let c: UIColor = p.tier == 1 ? .systemIndigo : .systemOrange
+                r.fillColor = c.withAlphaComponent(0.18); r.strokeColor = c.withAlphaComponent(0.9); r.lineWidth = 2
+                return r
+            }
+            if let h = overlay as? HighlightCircle {
+                let r = MKCircleRenderer(circle: h)
+                let c: UIColor = h.tier == 1 ? .systemIndigo : .systemOrange
+                r.fillColor = c.withAlphaComponent(0.18); r.strokeColor = c.withAlphaComponent(0.9); r.lineWidth = 2
+                r.lineDashPattern = [4, 4]
+                return r
+            }
             guard let line = overlay as? RouteLine else { return MKOverlayRenderer(overlay: overlay) }
             let r = MKPolylineRenderer(polyline: line)
             r.strokeColor = line.casing ? .white : .systemIndigo
@@ -127,30 +186,57 @@ struct TourMapView: UIViewRepresentable {
                 return v
             }
             guard let s = annotation as? SightAnnotation else { return nil }
-            if s.card.tier == 1 && s.passed {
-                let v = mapView.dequeueReusableAnnotationView(withIdentifier: "sight1", for: annotation) as! MKMarkerAnnotationView
-                v.markerTintColor = .systemIndigo
-                v.glyphImage = UIImage(systemName: Self.glyph(s.card))
-                v.displayPriority = .defaultHigh
-                v.canShowCallout = false
-                return v
-            }
-            let v = mapView.dequeueReusableAnnotationView(withIdentifier: "dot", for: annotation)
-            let size: CGFloat = s.passed ? 12 : (s.card.tier == 1 ? 10 : 7)
-            let color: UIColor = s.passed ? .systemOrange : (s.card.tier == 1 ? .systemIndigo.withAlphaComponent(0.45) : .systemGray.withAlphaComponent(0.6))
-            v.image = UIGraphicsImageRenderer(size: CGSize(width: size + 2, height: size + 2)).image { _ in
-                UIColor.white.setFill(); UIBezierPath(ovalIn: CGRect(x: 0, y: 0, width: size + 2, height: size + 2)).fill()
-                color.setFill(); UIBezierPath(ovalIn: CGRect(x: 1, y: 1, width: size, height: size)).fill()
-            }
-            v.displayPriority = s.passed ? .defaultHigh : .defaultLow
-            v.canShowCallout = false
+            let id = s.card.tier == 1 && s.passed ? "sight1" : "dot"
+            let v = mapView.dequeueReusableAnnotationView(withIdentifier: id, for: annotation)
+            MainActor.assumeIsolated { style(v, s) }
             return v
+        }
+
+        /// Pin look by tier / passed / selected. The selected pin is bigger and always on top.
+        @MainActor func style(_ v: MKAnnotationView, _ s: SightAnnotation) {
+            let selected = model.selectedCard == s.card.id
+            v.canShowCallout = false
+            v.accessibilityValue = selected ? "selected" : nil
+            if let m = v as? MKMarkerAnnotationView {
+                m.markerTintColor = .systemIndigo
+                m.glyphImage = UIImage(systemName: Self.glyph(s.card))
+                m.displayPriority = selected ? .required : .defaultHigh
+                m.zPriority = selected ? .max : .defaultUnselected
+                m.transform = selected ? CGAffineTransform(scaleX: 1.35, y: 1.35) : .identity
+                return
+            }
+            var size: CGFloat = s.passed ? 12 : (s.card.tier == 1 ? 10 : 7)
+            if selected { size *= 1.6 }
+            let color: UIColor = s.passed || selected ? (s.card.tier == 1 && !s.passed ? .systemIndigo : .systemOrange)
+                : (s.card.tier == 1 ? .systemIndigo.withAlphaComponent(0.45) : .systemGray.withAlphaComponent(0.6))
+            let ring: CGFloat = selected ? 2 : 1
+            v.image = UIGraphicsImageRenderer(size: CGSize(width: size + 2 * ring, height: size + 2 * ring)).image { _ in
+                (selected ? color : UIColor.white).withAlphaComponent(1).setFill()
+                UIBezierPath(ovalIn: CGRect(x: 0, y: 0, width: size + 2 * ring, height: size + 2 * ring)).fill()
+                UIColor.white.setFill(); UIBezierPath(ovalIn: CGRect(x: ring, y: ring, width: size, height: size)).fill()
+                color.setFill(); UIBezierPath(ovalIn: CGRect(x: ring + 1, y: ring + 1, width: size - 2, height: size - 2)).fill()
+            }
+            v.displayPriority = selected ? .required : (s.passed ? .defaultHigh : .defaultLow)
+            v.zPriority = selected ? .max : .defaultUnselected
         }
 
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
             guard let s = view.annotation as? SightAnnotation else { return }
-            mapView.deselectAnnotation(s, animated: false)
-            Task { @MainActor in self.model.select(s.card) }
+            MainActor.assumeIsolated {
+                guard model.selectedCard != s.card.id else { return }
+                model.select(s.card)
+            }
+        }
+
+        func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+            guard view.annotation is SightAnnotation, !rendering else { return }
+            // A tap on another pin deselects this one first; wait a beat and clear only if
+            // nothing got selected instead.
+            DispatchQueue.main.async { [weak self, weak mapView] in
+                guard let self, let mapView, !self.rendering,
+                      !mapView.selectedAnnotations.contains(where: { $0 is SightAnnotation }) else { return }
+                MainActor.assumeIsolated { self.model.clearSelection() }
+            }
         }
 
         static func glyph(_ c: SightCard) -> String {

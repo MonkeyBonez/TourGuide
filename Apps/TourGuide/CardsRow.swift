@@ -6,6 +6,7 @@ import TourGuideCore
 struct CardsRow: View {
     @ObservedObject var model: AppModel
     @ObservedObject var translations: TranslationStore
+    @ObservedObject var appleNames: AppleNameStore
 
     var body: some View {
         let cards = model.snapshot?.cards ?? []
@@ -15,7 +16,7 @@ struct CardsRow: View {
                 HStack(alignment: .top, spacing: 10) {
                     ForEach(Array(cards.enumerated()), id: \.element.id) { i, c in
                         SightCardView(card: c, content: model.cardContent[c.id], translations: translations,
-                                      selected: model.selectedCard == c.id)
+                                      appleName: appleNames.names[c.id], selected: model.selectedCard == c.id)
                             .id(c.id)
                             .onTapGesture { model.select(c) }
                             .accessibilityElement(children: .combine)
@@ -36,7 +37,8 @@ struct CardsRow: View {
                         .accessibilityIdentifier("namedToggle")
                         if model.showNamed {
                             ForEach(named) { c in
-                                NamedPlaceView(card: c, translations: translations)
+                                NamedPlaceView(card: c, translations: translations, appleName: appleNames.names[c.id],
+                                               selected: model.selectedCard == c.id)
                                     .onTapGesture { model.select(c) }
                                     .accessibilityElement(children: .combine)
                                     .accessibilityIdentifier("named-\(c.id)")
@@ -44,7 +46,7 @@ struct CardsRow: View {
                         }
                     }
                     if cards.isEmpty && named.isEmpty {
-                        Text("Nothing mapped along this walk. Move the slider right for more.")
+                        Text("Nothing mapped along this walk. Move the slider left for more.")
                             .font(.footnote).foregroundStyle(.secondary).frame(width: 260, height: 60)
                     }
                 }
@@ -61,6 +63,7 @@ struct SightCardView: View {
     let card: SightCard
     let content: CardContent?
     @ObservedObject var translations: TranslationStore
+    var appleName: String? = nil
     var selected = false
 
     var body: some View {
@@ -75,7 +78,7 @@ struct SightCardView: View {
             }
             .frame(width: 260, height: 74).clipped()
             VStack(alignment: .leading, spacing: 3) {
-                NameLine(poi: card.poi, translations: translations)
+                NameLine(poi: card.poi, translations: translations, appleName: appleName)
                 Text(meta).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
                 extract.font(.caption).lineLimit(3)
                 if let hours = content?.osm["opening_hours"] {
@@ -112,15 +115,20 @@ struct SightCardView: View {
     }
 }
 
-/// Name precedence (PRD §8.11): OSM name:en, else the on-device translation (marked), else local.
+/// Name precedence (PRD §8.10–11): OSM name:en, else Apple Maps' English name, else the
+/// on-device translation (marked), else local.
 struct NameLine: View {
     let poi: POI
     @ObservedObject var translations: TranslationStore
+    var appleName: String? = nil
     var font: Font = .subheadline.weight(.semibold)
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
-            if POI.isJapanese(poi.displayName), let t = translations.translated[poi.displayName] {
+            if POI.isJapanese(poi.displayName), let a = appleName {
+                Text(a).font(font).lineLimit(1)
+                Text(poi.displayName).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+            } else if POI.isJapanese(poi.displayName), let t = translations.translated[poi.displayName] {
                 (Text(t) + Text(" ") + Text(Image(systemName: "character.bubble")).font(.caption2)).font(font).lineLimit(1)
                 Text(poi.displayName).font(.caption).foregroundStyle(.secondary).lineLimit(1)
             } else {
@@ -136,11 +144,13 @@ struct NameLine: View {
 struct NamedPlaceView: View {
     let card: SightCard
     @ObservedObject var translations: TranslationStore
+    var appleName: String? = nil
+    var selected = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Image(systemName: TourMapView.Coordinator.glyph(card)).foregroundStyle(.orange)
-            NameLine(poi: card.poi, translations: translations, font: .footnote.weight(.semibold))
+            NameLine(poi: card.poi, translations: translations, appleName: appleName, font: .footnote.weight(.semibold))
             Text([card.poi.kindLabel, card.poi.denomination].compactMap { $0 }.joined(separator: " · "))
                 .font(.caption2).foregroundStyle(.secondary).lineLimit(2)
             Spacer(minLength: 0)
@@ -149,5 +159,6 @@ struct NamedPlaceView: View {
         .padding(10)
         .frame(width: 170, height: 120, alignment: .topLeading)
         .background(.background, in: RoundedRectangle(cornerRadius: 16))
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(selected ? Color.orange : .clear, lineWidth: 2))
     }
 }

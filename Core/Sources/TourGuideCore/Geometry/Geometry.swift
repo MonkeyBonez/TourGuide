@@ -20,6 +20,18 @@ public enum SlackEllipse {
     }
 }
 
+/// The fastest-path box (PRD §5 step 8): the A→B segment's bounding box grown by `bufferM` on
+/// every side. Kanazawa's direct route strays at most 221 m from the straight line; 300 m holds
+/// it with margin at 22 % of the slack ellipse's area. Same metre factors as `SlackEllipse`.
+public enum LineBuffer {
+    public static let defaultBufferM = 300.0
+    public static func bbox(a: Place, b: Place, bufferM: Double = defaultBufferM) -> [Double] {
+        let my = 111_320.0, mx = 111_320.0 * cos(a.lat * .pi / 180)
+        let dLat = bufferM / my, dLon = bufferM / mx
+        return [min(a.lat, b.lat) - dLat, min(a.lon, b.lon) - dLon, max(a.lat, b.lat) + dLat, max(a.lon, b.lon) + dLon]
+    }
+}
+
 /// Planar helpers in local metres (`LocalPlane`).
 public enum Polygon {
     @inline(__always)

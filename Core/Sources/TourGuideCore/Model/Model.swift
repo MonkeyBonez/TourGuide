@@ -105,6 +105,19 @@ public struct FetchBox: Codable, Sendable {
         self.routeFactor = routeFactor; self.pois = pois; self.ways = ways; self.nodes = nodes
     }
 
+    /// The walk network inside `bbox`, no sights: ways with at least one node inside, and every
+    /// node those ways use. What the fastest-path query returns, cut from a full box (tests,
+    /// `tgtool route --narrow`, the bundled demo).
+    public func cropped(to bbox: [Double]) -> FetchBox {
+        var coord: [Int64: [Double]] = [:]
+        for n in nodes { coord[Int64(n[0])] = n }
+        func inside(_ n: [Double]) -> Bool { n[1] >= bbox[0] && n[1] <= bbox[2] && n[2] >= bbox[1] && n[2] <= bbox[3] }
+        let kept = ways.filter { w in w.nodes.contains { coord[$0].map(inside) ?? false } }
+        var used = Set<Int64>(); for w in kept { used.formUnion(w.nodes) }
+        return FetchBox(start: start, end: end, bbox: bbox, straightM: straightM, slack: 0, routeFactor: routeFactor,
+                        pois: [], ways: kept, nodes: nodes.filter { used.contains(Int64($0[0])) })
+    }
+
     public init(from d: Decoder) throws {
         let c = try d.container(keyedBy: CodingKeys.self)
         start = try c.decode(Place.self, forKey: .start); end = try c.decode(Place.self, forKey: .end)

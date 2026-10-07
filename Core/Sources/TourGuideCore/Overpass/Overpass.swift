@@ -24,6 +24,20 @@ public enum OverpassQuery {
         """
     }
 
+    /// The fastest-path query (PRD §5 step 8): only the walk network, no sights, for the narrow
+    /// `LineBuffer` box. Same way filter as `text`, so the graph is built the same way.
+    public static let walkVersion = "v1"
+    public static func walkOnlyText(bbox: [Double], timeout: Int = 25) -> String {
+        let bb = String(format: "%.5f,%.5f,%.5f,%.5f", bbox[0], bbox[1], bbox[2], bbox[3])
+        return """
+        [out:json][timeout:\(timeout)];
+        way["highway"]["area"!~"yes"]["access"!~"no"]["highway"!~"abandoned|bus_guideway|construction|cycleway|motor|no|planned|platform|proposed|raceway|razed|rest_area|services"]["foot"!~"no"]["service"!~"private"]["sidewalk"!~"separate"]["sidewalk:both"!~"separate"]["sidewalk:left"!~"separate"]["sidewalk:right"!~"separate"](\(bb))->.w;
+        .w out body;
+        node(w.w);
+        out skel qt;
+        """
+    }
+
     /// osmnx's "walk" filter (2.1.1) with the pipeline's default access: keep access=private,
     /// drop access=no. Applied again client-side so a POI way that is also a highway is sorted.
     public static func walkable(_ t: [String: String]) -> Bool {
@@ -109,6 +123,7 @@ public actor OverpassClient {
     }
     public struct AllMirrorsFailed: Error, LocalizedError {
         public let reasons: [String]
+        public init(reasons: [String]) { self.reasons = reasons }
         public var errorDescription: String? { "Couldn't reach any OpenStreetMap server (\(reasons.count) tries)." }
     }
 
@@ -119,6 +134,55 @@ public actor OverpassClient {
 
     public init(transport: HTTPTransport, mirrors: [String] = OverpassClient.mirrors, rounds: Int = 2, pause: TimeInterval = 10) {
         self.transport = transport; self.mirrors = mirrors; self.rounds = rounds; self.pause = pause
+    }
+
+    /// Hedged fetch for a small query: mirror i starts `stagger × i` seconds in unless an answer
+    /// has come back; the first good answer wins and the rest are cancelled. One slow mirror then
+    /// costs `stagger`, not its whole timeout.
+    public func fetchHedged(query: String, stagger: TimeInterval = 3,
+                            progress: @escaping @Sendable (Progress) -> Void = { _ in }) async throws -> Data {
+        let mirrors = self.mirrors, transport = self.transport
+        let reasons = ReasonLog()
+        return try await withThrowingTaskGroup(of: Data?.self) { group in
+            for (i, m) in mirrors.enumerated() {
+                group.addTask {
+                    if i > 0 { try await Task.sleep(nanoseconds: UInt64(stagger * Double(i) * 1e9)) }
+                    let host = URL(string: m)?.host ?? m
+                    progress(.trying(mirror: host, attempt: i + 1, of: mirrors.count))
+                    do { return try await Self.attempt(m, query: query, transport: transport) }
+                    catch is CancellationError { throw CancellationError() }
+                    catch let e as URLError where e.code == .cancelled { throw CancellationError() }
+                    catch {
+                        let r = Self.reason(error)
+                        reasons.add("\(host): \(r)"); progress(.failed(mirror: host, reason: r))
+                        return nil
+                    }
+                }
+            }
+            for try await result in group {
+                if let data = result { group.cancelAll(); return data }
+            }
+            throw AllMirrorsFailed(reasons: reasons.items)
+        }
+    }
+
+    static func attempt(_ mirror: String, query: String, transport: HTTPTransport) async throws -> Data {
+        var r = URLRequest(url: URL(string: mirror)!)
+        r.httpMethod = "POST"
+        r.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        r.httpBody = formBody(["data": query])
+        let data = try await transport.fetch(r)
+        // A 200 with a runtime error (timeout, out of memory) has no usable elements.
+        if let s = String(data: data.prefix(4096), encoding: .utf8), s.contains("\"remark\""), s.contains("runtime error") {
+            throw URLError(.cannotParseResponse)
+        }
+        guard data.first == UInt8(ascii: "{") else { throw URLError(.cannotParseResponse) }
+        return data
+    }
+
+    static func reason(_ error: Error) -> String {
+        (error as? HTTPError).map { "HTTP \($0.status)" }
+            ?? (error as? URLError).map { "\($0.code == .timedOut ? "timed out" : "error \($0.code.rawValue)")" } ?? "\(error)"
     }
 
     public func fetch(query: String, progress: @Sendable (Progress) -> Void = { _ in }) async throws -> Data {
@@ -132,22 +196,12 @@ public actor OverpassClient {
                 attempt += 1
                 let host = URL(string: m)?.host ?? m
                 progress(.trying(mirror: host, attempt: attempt, of: total))
-                var r = URLRequest(url: URL(string: m)!)
-                r.httpMethod = "POST"
-                r.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-                r.httpBody = formBody(["data": query])
                 do {
-                    let data = try await transport.fetch(r)
-                    // A 200 with a runtime error (timeout, out of memory) has no usable elements.
-                    if let s = String(data: data.prefix(4096), encoding: .utf8), s.contains("\"remark\""), s.contains("runtime error") {
-                        throw URLError(.cannotParseResponse)
-                    }
-                    guard data.first == UInt8(ascii: "{") else { throw URLError(.cannotParseResponse) }
-                    return data
+                    return try await Self.attempt(m, query: query, transport: transport)
                 } catch is CancellationError {
                     throw CancellationError()
                 } catch {
-                    let reason = (error as? HTTPError).map { "HTTP \($0.status)" } ?? (error as? URLError).map { "\($0.code == .timedOut ? "timed out" : "error \($0.code.rawValue)")" } ?? "\(error)"
+                    let reason = Self.reason(error)
                     reasons.append("\(host): \(reason)")
                     progress(.failed(mirror: host, reason: reason))
                 }
@@ -155,4 +209,11 @@ public actor OverpassClient {
         }
         throw AllMirrorsFailed(reasons: reasons)
     }
+}
+
+final class ReasonLog: @unchecked Sendable {
+    private let lock = NSLock()
+    private var _items: [String] = []
+    func add(_ s: String) { lock.withLock { _items.append(s) } }
+    var items: [String] { lock.withLock { _items } }
 }

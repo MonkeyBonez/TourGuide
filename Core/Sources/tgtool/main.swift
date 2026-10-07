@@ -4,7 +4,11 @@
 //   tgtool fetch <lat,lon> <lat,lon> [--name-a X] [--name-b Y] [--slack 0.5] [--out box.json] [--record DIR] [--no-cache]
 //   tgtool match box_pois.json wikidata_box.json [--out matched.json]
 //   tgtool cards box.json [--slacks 0.1,0.5] [--out cards.json] [--record DIR]
+//   tgtool fast <lat,lon> <lat,lon> [--buffer 300] [--no-cache]      live narrow fetch → fastest path
+//   tgtool fast kanazawa [--buffer 300]                              the same, cut from the fixture
+//   tgtool applenames box.json [--slacks 0.1,0.5]                    Apple Maps names vs AppleNameGuard
 import Foundation
+import MapKit
 import LikeWaterEngine
 import TourGuideCore
 
@@ -39,6 +43,8 @@ case "route": try routeCommand()
 case "fetch": try await fetchCommand()
 case "match": try matchCommand()
 case "cards": try await cardsCommand()
+case "fast": try await fastCommand()
+case "applenames": try await appleNamesCommand()
 default: fail("unknown command \(command)")
 }
 
@@ -238,4 +244,92 @@ func matchCommand() throws {
           "(\(all.filter { $0.extractLang == "en" }.count) en, \(all.filter { $0.extractLang == "ja" }.count) ja), " +
           "\(all.filter { $0.imageURL != nil }.count) with a photo, \(all.filter { !$0.osm.isEmpty }.count) with OSM details")
     if let out { try writeJSON(["routes": result], out); print("wrote \(out)") }
+}
+
+// MARK: - fast (PRD §5 step 8)
+
+@MainActor func fastCommand() async throws {
+    let bufferM = Double(opt("--buffer") ?? "\(LineBuffer.defaultBufferM)")!
+    let noCache = flag("--no-cache")
+    guard let first = args.first else { fail("usage: tgtool fast <lat,lon> <lat,lon> | kanazawa") }
+    let t0 = CFAbsoluteTimeGetCurrent()
+    let narrow: FetchBox
+    var full: FetchBox?
+    if first == "kanazawa" {
+        let box = try BundledFixtures.kanazawa()
+        full = box
+        narrow = box.cropped(to: LineBuffer.bbox(a: box.start, b: box.end, bufferM: bufferM))
+    } else {
+        guard args.count >= 2 else { fail("usage: tgtool fast <lat,lon> <lat,lon>") }
+        let (alat, alon) = coordinate(args[0]), (blat, blon) = coordinate(args[1])
+        let pipeline = TourPipeline()
+        narrow = try await pipeline.fetchWalkNetwork(from: Place(name: "A", lat: alat, lon: alon), to: Place(name: "B", lat: blat, lon: blon),
+                                                     bufferM: bufferM, useCache: !noCache) { p in
+            if case .failed(let m, let r) = p { print("  \(m) failed: \(r)") }
+            if case .trying(let m, let a, let n) = p { print("  trying \(m) (\(a)/\(n))") }
+        }
+    }
+    let fetchS = CFAbsoluteTimeGetCurrent() - t0
+    let bb = narrow.bbox
+    let wM = Polygon.metres(bb[0], bb[1], bb[0], bb[3]), hM = Polygon.metres(bb[0], bb[1], bb[2], bb[1])
+    print(String(format: "narrow box (%.0f m buffer): %.0f × %.0f m, %d ways, %d nodes; fetch %.1f s", bufferM, wM, hM,
+                 narrow.ways.count, narrow.nodes.count, fetchS))
+    let t1 = CFAbsoluteTimeGetCurrent()
+    let s = try TourSession(box: narrow, maxSlack: 0)
+    let r = try s.route(slack: 0)
+    print(String(format: "fastest path: %.0f m, %.1f min, %d crossings; snap A %.0f m, B %.0f m; largest component %d of %d nodes; session + route %.0f ms",
+                 r.metres, r.seconds / 60, r.crossings, s.snapA, s.snapB, s.graph.componentSizes.max() ?? 0, s.graph.nodeCount,
+                 (CFAbsoluteTimeGetCurrent() - t1) * 1000))
+    if let full {
+        let fs = try TourSession(box: full, maxSlack: 0)
+        let fr = try fs.route(slack: 0)
+        let fbb = full.bbox
+        let area = (wM * hM) / (Polygon.metres(fbb[0], fbb[1], fbb[0], fbb[3]) * Polygon.metres(fbb[0], fbb[1], fbb[2], fbb[1]))
+        if let a0 = r.coordinates.first, let f0 = fr.coordinates.first {
+            print(String(format: "start node: narrow %.6f,%.6f · full %.6f,%.6f", a0.lat, a0.lon, f0.lat, f0.lon))
+        }
+        print(String(format: "full box direct: %.0f m, %.1f min; same nodes: %@; narrow = %.0f %% of the area, %.0f %% of the nodes",
+                     fr.metres, fr.seconds / 60, fr.coordinates.map { [$0.lat, $0.lon] } == r.coordinates.map { [$0.lat, $0.lon] } ? "yes" : "NO",
+                     area * 100, Double(narrow.nodes.count) / Double(full.nodes.count) * 100))
+    }
+}
+
+// MARK: - applenames (PRD §8.10)
+
+@MainActor func appleNamesCommand() async throws {
+    let slacks = (opt("--slacks") ?? "0.1,0.5").split(separator: ",").map { Double($0)! }
+    guard let path = args.first else { fail("usage: tgtool applenames box.json|kanazawa") }
+    let session = try TourSession(box: try loadBox(path), maxSlack: slacks.max()!)
+    var seen = Set<String>(), sights: [Sight] = []
+    for sl in slacks { for p in try session.route(slack: sl).passed where seen.insert(p.sight.poi.id).inserted { sights.append(p.sight) } }
+    var accepted = 0, loose = 0, japanese = 0
+    print("sight | kind | guard max m | Apple result | m | category | verdict")
+    for s in sights {
+        let poi = s.poi
+        let here = CLLocation(latitude: poi.lat, longitude: poi.lon)
+        var best: (String, Double, String?)?, verdict = "no result", hit = false
+        for q in [poi.nameLocal, poi.name].compactMap({ $0 }) {
+            let r = MKLocalSearch.Request()
+            r.naturalLanguageQuery = q
+            r.resultTypes = .pointOfInterest
+            r.region = MKCoordinateRegion(center: here.coordinate, latitudinalMeters: 300, longitudinalMeters: 300)
+            let items: [MKMapItem]
+            do { items = try await MKLocalSearch(request: r).start().mapItems }
+            catch let e as MKError where e.code == .placemarkNotFound { try? await Task.sleep(nanoseconds: 1_200_000_000); continue }
+            catch { print("  search failed (\(error.localizedDescription)); MapKit throttles ~50 a minute"); continue }
+            let ranked = items.compactMap { i in i.name.map { ($0, (i.placemark.location ?? here).distance(from: here), i.pointOfInterestCategory?.rawValue) } }
+                .sorted { $0.1 < $1.1 }
+            if best == nil || (ranked.first.map { $0.1 < best!.1 } ?? false) { best = ranked.first }
+            if let ok = ranked.first(where: { !POI.isJapanese($0.0) && AppleNameGuard.accept(poi: poi, resultName: $0.0, distance: $0.1, categoryRaw: $0.2) }) {
+                best = ok; hit = true; break
+            }
+            try? await Task.sleep(nanoseconds: 1_200_000_000)
+        }
+        if let b = best, b.1 <= 150 { loose += 1 }
+        if POI.isJapanese(poi.displayName) { japanese += 1 }
+        if hit { accepted += 1; verdict = "accepted" } else if best != nil { verdict = "rejected" }
+        print(String(format: "%@ | %@ | %.0f | %@ | %.0f | %@ | %@", poi.displayName, poi.kindLabel, AppleNameGuard.maxDistance(for: poi),
+                     best?.0 ?? "-", best?.1 ?? -1, (best?.2 ?? "-").replacingOccurrences(of: "MKPOICategory", with: ""), verdict))
+    }
+    print("\n\(sights.count) sights (\(japanese) shown under a Japanese name): \(accepted) accepted by the guard; \(loose) had a nearest result within 150 m (the old rule)")
 }
