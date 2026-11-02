@@ -73,6 +73,31 @@ final class TourGuideUITests: XCTestCase {
         shoot(app, "slider-left")
     }
 
+    func testSyntheticIndoorVisibilityAndOrderedRoute() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-uiTestFixture", "visibility", "-uiTestStart", "35.0,139.0",
+                               "-uiTestDestination", "35.0,139.0066", "-uiTestDestinationName", "Synthetic destination",
+                               "-uiTestSlack", "0", "-uiTestMaxSlack", "0.5", "-uiTestPace", "1.4",
+                               "-uiTestWalkBlurbs", "none", "-translate", "NO"]
+        app.launch()
+        XCTAssertEqual(readout(app), "7 min · 0.6 km · 1 sight · direct")
+        XCTAssertEqual(app.descendants(matching: .any)["card-0"].label, "Fixture: Museum Exterior")
+        shoot(app, "synthetic-direct")
+
+        app.sliders["slackSlider"].adjust(toNormalizedSliderPosition: 0)
+        let wider = NSPredicate(format: "label == '9 min · 0.8 km · 3 sights · +2 min'")
+        expectation(for: wider, evaluatedWith: app.staticTexts["routeReadout"]); waitForExpectations(timeout: 10)
+        let cards = (0..<3).map { app.descendants(matching: .any)["card-\($0)"] }
+        XCTAssertTrue(cards[2].waitForExistence(timeout: 5))
+        XCTAssertEqual(cards.map(\.label), ["Fixture: Temple Gate", "Fixture: Plaza Sculpture", "Fixture: Museum Exterior"])
+        shoot(app, "synthetic-detour")
+        cards[1].tap()
+        XCTAssertEqual(app.staticTexts["routeReadout"].label, "9 min · 0.8 km · 3 sights · +2 min")
+        shoot(app, "synthetic-detour-middle")
+        cards[1].swipeLeft()
+        shoot(app, "synthetic-detour-cards")
+    }
+
     func testSliderRightEndIsDirect() {
         let app = launch(slack: 0.5)
         XCTAssertTrue(readout(app).contains("+12 min"))

@@ -1,0 +1,40 @@
+{
+  "_fixture_note": "Entirely synthetic walking graph and POIs; no real streets, sights, Wikidata IDs or visibility claims.",
+  "start": {"name": "Synthetic start", "lat": 35.0, "lon": 139.0},
+  "end": {"name": "Synthetic destination", "lat": 35.0, "lon": 139.0066},
+  "bbox": [34.9985, 138.999, 35.0015, 139.0076],
+  "straight_m": 601.3,
+  "slack": 0.5,
+  "route_factor": 1.25,
+  "pois": [
+    {"id": "node/9001", "lat": 35.0008, "lon": 139.0022, "name": "Fixture: Temple Gate",
+     "tags": {"building": "shrine"}, "all_tags": {"building": "shrine", "location": "outdoor"},
+     "wikidata": "Q90000001", "sitelinks": 8},
+    {"id": "node/9002", "lat": 35.0008, "lon": 139.0044, "name": "Fixture: Plaza Sculpture",
+     "tags": {"tourism": "artwork"}, "all_tags": {"tourism": "artwork", "indoor": "no"},
+     "wikidata": "Q90000002", "sitelinks": 8},
+    {"id": "node/9003", "lat": 34.9992, "lon": 139.0033, "name": "Fixture: Indoor Collection",
+     "tags": {"tourism": "attraction"}, "all_tags": {"tourism": "attraction", "indoor": "yes"},
+     "wikidata": "Q90000003", "sitelinks": 40},
+    {"id": "node/9004", "lat": 34.9992, "lon": 139.0022, "name": "Fixture: Indoor Exhibition",
+     "tags": {"tourism": "gallery"}, "all_tags": {"tourism": "gallery", "location": "indoor"},
+     "wikidata": "Q90000004", "sitelinks": 20},
+    {"id": "node/9005", "lat": 35.0, "lon": 139.00605, "name": "Fixture: Museum Exterior",
+     "tags": {"tourism": "museum", "building": "yes"}, "all_tags": {"tourism": "museum", "building": "yes"},
+     "wikidata": "Q90000005", "sitelinks": 1}
+  ],
+  "ways": [
+    {"id": 1001, "tags": {"highway": "footway"}, "nodes": [1, 2, 3, 4, 5, 6, 7]},
+    {"id": 1002, "tags": {"highway": "footway"}, "nodes": [2, 8, 9, 10, 11, 12, 6]},
+    {"id": 1003, "tags": {"highway": "footway"}, "nodes": [2, 13, 14, 15, 16, 17, 6]}
+  ],
+  "nodes": [
+    [1, 35.0, 139.0], [2, 35.0, 139.0011], [3, 35.0, 139.0022],
+    [4, 35.0, 139.0033], [5, 35.0, 139.0044], [6, 35.0, 139.0055],
+    [7, 35.0, 139.0066],
+    [8, 35.0008, 139.0011], [9, 35.0008, 139.0022],
+    [10, 35.0008, 139.0033], [11, 35.0008, 139.0044], [12, 35.0008, 139.0055],
+    [13, 34.9992, 139.0011], [14, 34.9992, 139.0022],
+    [15, 34.9992, 139.0033], [16, 34.9992, 139.0044], [17, 34.9992, 139.0055]
+  ]
+}

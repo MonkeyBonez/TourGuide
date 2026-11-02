@@ -20,6 +20,7 @@ public actor TourPipeline {
     let wikidata: WikidataClient
     let cache: DiskCache?
     public static let routeFactor = 1.25
+    private static let matchingVersion = "visibility-v1"
 
     public init(transport: HTTPTransport = URLSessionTransport(requestTimeout: 90, resourceTimeout: 150),
                 wikidataTransport: HTTPTransport? = nil,
@@ -34,7 +35,29 @@ public actor TourPipeline {
     }
 
     public static func cacheKey(bbox: [Double]) -> String {
+        "box:\(OverpassQuery.version):\(matchingVersion):" + bbox.map { String(format: "%.5f", $0) }.joined(separator: ",")
+    }
+
+    private static func legacyCacheKey(bbox: [Double]) -> String {
         "box:\(OverpassQuery.version):" + bbox.map { String(format: "%.5f", $0) }.joined(separator: ",")
+    }
+
+    private func cachedBox(bbox: [Double]) -> FetchBox? {
+        let key = Self.cacheKey(bbox: bbox)
+        if let hit = cache?.load(FetchBox.self, key: key) { return hit }
+        guard let hit = cache?.load(FetchBox.self, key: Self.legacyCacheKey(bbox: bbox)),
+              Self.legacyMatchingIsCompatible(hit) else { return nil }
+        return hit
+    }
+
+    private static func legacyMatchingIsCompatible(_ box: FetchBox) -> Bool {
+        guard box.pois.contains(where: \.isExplicitlyIndoor) else { return true }
+        let byID = Dictionary(box.pois.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        return box.pois.allSatisfy { poi in
+            guard let foldedInto = poi.parent ?? poi.dupOf else { return true }
+            guard let parent = byID[foldedInto] else { return false }
+            return poi.isExplicitlyIndoor == parent.isExplicitlyIndoor
+        }
     }
 
     public static func walkCacheKey(bbox: [Double]) -> String {
@@ -45,7 +68,7 @@ public actor TourPipeline {
     /// skips the fastest-path step).
     public func cachedBox(from a: Place, to b: Place, maxSlack: Double = 0.5) -> FetchBox? {
         let (bbox, _) = SlackEllipse.bbox(a: a, b: b, slack: maxSlack, routeFactor: Self.routeFactor)
-        guard var hit = cache?.load(FetchBox.self, key: Self.cacheKey(bbox: bbox)) else { return nil }
+        guard var hit = cachedBox(bbox: bbox) else { return nil }
         hit.start = a; hit.end = b
         return hit
     }
@@ -76,7 +99,7 @@ public actor TourPipeline {
                          progress: @escaping @Sendable (Stage) -> Void = { _ in }) async throws -> FetchBox {
         let (bbox, straight) = SlackEllipse.bbox(a: a, b: b, slack: maxSlack, routeFactor: Self.routeFactor)
         let key = Self.cacheKey(bbox: bbox)
-        if useCache, var hit = cache?.load(FetchBox.self, key: key) {
+        if useCache, var hit = cachedBox(bbox: bbox) {
             hit.start = a; hit.end = b
             progress(.cacheHit)
             return hit

@@ -83,6 +83,9 @@ Rationale: Wikipedia/Wikidata is high precision, low recall (Japan has ~80k shri
 
 If a node, or a smaller area (a hall, a gate, the castle building), sits inside a `place_of_worship`, `historic`, `park` or `garden` area (point-in-polygon on the way geometry; relation outer rings), attach it to that parent. The parent is the sight that scores edges and gets the card; the child is kept as data only (V1 sub-stops). **The parent takes the fame of the most famous thing inside it**: Kanazawa Castle (20 languages) sits inside Kanazawa Castle Park, whose own item has 1; without the hand-up the park scored 4 and the route never went there. Same-name duplicates within 60 m collapse to one (the Nomura house is mapped three times). Kanazawa: 97 children folded, 54 Tier-1 sights left.
 
+Explicitly indoor and other POIs are kept separate during folding and same-name dedupe, so an
+indoor collection cannot donate its fame to an outdoor area or hide a same-name exterior.
+
 Overpass note: `out tags center geom` returns `geometry`/`bounds` and no `center` for ways and relations. Take the bounds midpoint when `center` is absent, or every area POI — the castle, Kenrokuen, Oyama's grounds — is silently dropped (the bug in the first `poi_corridor.py` run).
 
 ### 4.4 POI record
@@ -110,6 +113,11 @@ side          W | E of the line
 2. Fetch box = the bounding box of the slack ellipse: foci A and B, sum of straight-line distances ≤ L × (1 + max slack) × 1.25 (1.25 is the walking/straight-line allowance; Kanazawa measured 1.40). Fixed for the session; the slider does not refetch. A 400 m buffer around the line was wrong: it held 11 of 54 Tier-1 sights and missed the castle park (681 m off the line) and Kenrokuen (856 m), both inside the +50 % bound. Kanazawa: 3.4 × 3.9 km, 18,681 elements, 19 s when a mirror answered. The routing corridor is the Engine's: every street reachable within direct × (1 + slack).
 3. Fetch and tier POIs (§4). The same Overpass query also returns the walk network (highway ways) for the box.
 4. Build the graph and score it. Walk ways → the Engine's in-memory `PedestrianGraph` using the pipeline's walkability rule, no sidewalk synthesis (Kanazawa: 13,567 nodes, 16,289 edges). Each POI adds its weight to every edge within viewing distance, **measured to the polygon edge for an area**, not its centroid: by centroid the castle park touched 0 streets and Kenrokuen 11, and the slider was flat from 0.1 to 0.5; by polygon edge 713 and 985. 30 m is right once polygons are used; 60 m mostly adds Tier-2 noise. Edge score = min(1, interest / 20). The cap matters: at 5 or 10 every scored edge saturates, a 24-language garden equals a 2-language museum, and the route stops changing after slack 0.3.
+
+   An unambiguous `indoor=yes` or `location=indoor` POI is retained as an off-route pin and photo
+   context, but does not score a street or appear as a passed sight. Missing or contradictory
+   indoor/outdoor tags retain the distance-only behavior; a museum category alone is not an indoor
+   tag. This is a conservative relevance heuristic, not a proof of sightlines or occlusion.
 5. Slider, time vs interest = the corridor slack.
    - Left end: the most sights — a fixed maximum extra walking time; one constant, start at +50% (settings: +25 / +50 / +100 %).
    - Right end: slack 0, the direct route.

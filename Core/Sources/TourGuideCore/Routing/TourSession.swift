@@ -45,6 +45,7 @@ public enum SessionError: Error, LocalizedError, Equatable {
 /// Why a sight is or isn't on the route at a slider position.
 public enum Reach: Sendable, Equatable {
     case passed
+    case explicitlyIndoor                // tagged indoors; not credited as visible from the street
     case noEdge                          // nothing walkable within viewing distance (dead end, §5 step 7)
     case overBound(viaMetres: Double)    // the cheapest walk past it exceeds direct × (1 + slack)
     case outscored(viaMetres: Double)    // reachable, but other streets scored higher
@@ -126,6 +127,7 @@ public final class TourSession: @unchecked Sendable {
 
     /// Why `sight` is or isn't on the route at `slack` (the compare tool's "misses explained").
     public func explain(_ sight: Sight, route: TourRoute) -> Reach {
+        if sight.poi.isExplicitlyIndoor { return .explicitlyIndoor }
         if route.passed.contains(where: { $0.sight.poi.id == sight.poi.id }) { return .passed }
         if sight.edges.isEmpty { return .noEdge }
         let dTo = labels.dTo, dFrom = fromOrigin

@@ -28,7 +28,7 @@ struct ContentView: View {
                 .padding(.horizontal, 12)
                 .padding(.bottom, 8)
             }
-            .onAppear { model.location.start() }
+            .onAppear { if !model.isFixture { model.location.start() } }
             .onReceive(model.location.$coordinate) { c in
                 if c != nil, case .waiting = model.phase { model.plan() }
             }

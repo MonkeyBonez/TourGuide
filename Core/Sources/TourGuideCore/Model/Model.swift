@@ -67,6 +67,13 @@ public struct POI: Codable, Sendable, Identifiable, Equatable {
 
     /// A child inside an area, or a same-name duplicate: it scores through its parent (§4.3).
     public var isFolded: Bool { parent != nil || dupOf != nil }
+    /// Only unambiguous OSM indoor tags change street relevance. Missing or conflicting tags stay unknown.
+    public var isExplicitlyIndoor: Bool {
+        let indoor = allTags?["indoor"] ?? tags["indoor"]
+        let location = allTags?["location"] ?? tags["location"]
+        let outdoor = allTags?["outdoor"] ?? tags["outdoor"]
+        return (indoor == "yes" || location == "indoor") && indoor != "no" && location != "outdoor" && outdoor != "yes"
+    }
     /// 1 = has a Wikidata item, 2 = named only, 0 = unnamed or folded.
     public var tier: Int { isFolded ? 0 : (wikidata != nil ? 1 : (name != nil ? 2 : 0)) }
     /// What a card calls it.

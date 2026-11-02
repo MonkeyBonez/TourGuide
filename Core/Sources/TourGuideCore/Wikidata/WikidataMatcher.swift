@@ -3,6 +3,11 @@ import Foundation
 /// Tier-1 bridges and §4.3 dedupe, ported from the 6 Oct prototype (`match_wikidata.py`,
 /// `title_lookup.py`). Pure functions on `[POI]`; order: tag → box → dedupe → title.
 public enum WikidataMatcher {
+    private struct DedupeKey: Hashable {
+        let name: String
+        let isIndoor: Bool
+    }
+
     static let stripChars = try! NSRegularExpression(pattern: "[\\s\\-\u{2010}\u{30fb}()\u{ff08}\u{ff09}\u{300c}\u{300d}'\u{2019}]")
     static let kindSuffix = try! NSRegularExpression(pattern: "(temple|shrine|garden|park|museum|castle|gate|market)$")
 
@@ -71,6 +76,7 @@ public enum WikidataMatcher {
         for i in pois.indices {
             let own = area[i]
             for q in parentIdx where q != i && area[q] > own * 1.5
+                && pois[i].isExplicitlyIndoor == pois[q].isExplicitlyIndoor
                 && Polygon.pointInLatLonRings(lat: pois[i].lat, lon: pois[i].lon, pois[q].rings) {
                 pois[i].parent = pois[q].id
                 if pois[i].wikidata != nil && (pois[i].sitelinks ?? 0) > (pois[q].sitelinks ?? 0) {
@@ -80,10 +86,10 @@ public enum WikidataMatcher {
                 break
             }
         }
-        var byName: [String: [Int]] = [:]
+        var byName: [DedupeKey: [Int]] = [:]
         for i in pois.indices where pois[i].parent == nil && pois[i].name != nil {
             let n = normalize(pois[i].name)
-            let key = n.isEmpty ? normalize(pois[i].nameLocal) : n
+            let key = DedupeKey(name: n.isEmpty ? normalize(pois[i].nameLocal) : n, isIndoor: pois[i].isExplicitlyIndoor)
             if let q = byName[key, default: []].first(where: { Polygon.metres(pois[i].lat, pois[i].lon, pois[$0].lat, pois[$0].lon) <= 60 }) {
                 pois[i].dupOf = pois[q].id
                 if pois[i].wikidata != nil && pois[q].wikidata == nil {

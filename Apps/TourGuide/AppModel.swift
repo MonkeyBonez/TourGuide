@@ -54,10 +54,13 @@ final class AppModel: ObservableObject {
     let appleNames = AppleNameStore(disabled: UserDefaults.standard.string(forKey: "uiTestFixture") != nil)
     let walkBlurbs = WalkDescriptionStore()
     private let enricher = CardEnricher(transport: URLSessionTransport(requestTimeout: 20, resourceTimeout: 40))
+    private let fixtureEnricher = CardEnricher(transport: FixtureTransport(
+        directory: Bundle.main.bundleURL.appendingPathComponent("OfflineCardFixtures")), cache: nil)
     private var loadTask: Task<Void, Never>?
     private var fastTask: Task<Void, Never>?
     private var rerouteTask: Task<Void, Never>?
     private var fixture: String?
+    var isFixture: Bool { fixture != nil }
     static let fallbackCenter = CLLocationCoordinate2D(latitude: BundledFixtures.kanazawaStart.lat, longitude: BundledFixtures.kanazawaStart.lon)
 
     init() {
@@ -156,10 +159,8 @@ final class AppModel: ObservableObject {
                 if slowLoad > 0 { try await Task.sleep(nanoseconds: UInt64(slowLoad * 1e9)) }
                 if fullFails { throw OverpassClient.AllMirrorsFailed(reasons: ["UI test"]) }
                 let box: FetchBox
-                if fixture == "kanazawa" {
-                    var b = try BundledFixtures.kanazawa()
-                    b.start = a; b.end = destination      // a far-off end is an off-graph banner, not Murataya
-                    box = b
+                if let fixture {
+                    box = try self.fixtureBox(fixture, from: a, to: destination)
                 } else {
                     box = try await self.service.fetch(from: a, to: destination, maxSlack: maxSlack) { stage in
                         Task { @MainActor [weak self] in self?.show(stage) }
@@ -194,9 +195,8 @@ final class AppModel: ObservableObject {
     private func loadFastest(from a: Place, to b: Place, pace: Double, maxSlack: Double, fixture: String?) async {
         do {
             let narrow: FetchBox
-            if fixture == "kanazawa" {
-                var full = try BundledFixtures.kanazawa()
-                full.start = a; full.end = b
+            if let fixture {
+                let full = try fixtureBox(fixture, from: a, to: b)
                 narrow = full.cropped(to: LineBuffer.bbox(a: a, b: b))
             } else {
                 if await service.cachedBox(from: a, to: b, maxSlack: maxSlack) != nil { return }
@@ -209,6 +209,17 @@ final class AppModel: ObservableObject {
             fastSnapshot = snap
             routeVersion += 1; fitRequest += 1
         } catch {}
+    }
+
+    private func fixtureBox(_ name: String, from a: Place, to b: Place) throws -> FetchBox {
+        var box: FetchBox
+        switch name {
+        case "kanazawa": box = try BundledFixtures.kanazawa()
+        case "visibility": box = try BundledFixtures.visibility()
+        default: throw CocoaError(.fileNoSuchFile)
+        }
+        box.start = a; box.end = b
+        return box
     }
 
     private func show(_ stage: TourPipeline.Stage) {
@@ -262,11 +273,12 @@ final class AppModel: ObservableObject {
     private func enrich(_ cards: [SightCard]) {
         let todo = cards.filter { cardContent[$0.id] == nil }
         guard !todo.isEmpty else { return }
+        let enricher = fixture == nil ? self.enricher : fixtureEnricher
         Task { [weak self] in
             guard let self else { return }
-            await self.enricher.prefetch(todo.map(\.poi))
+            await enricher.prefetch(todo.map(\.poi))
             for c in todo {
-                let content = await self.enricher.content(for: c.poi)
+                let content = await enricher.content(for: c.poi)
                 self.cardContent[c.id] = content
                 if let ex = content.extract, content.extractLang != "en" { self.translations.request([ex]) }
             }
@@ -325,7 +337,7 @@ final class AppModel: ObservableObject {
 
     // MARK: UI tests
 
-    /// -uiTestFixture kanazawa · -uiTestStart "lat,lon" · -uiTestDestination "lat,lon"
+    /// -uiTestFixture kanazawa|visibility · -uiTestStart "lat,lon" · -uiTestDestination "lat,lon"
     /// -uiTestDestinationName · -uiTestSlack · -uiTestMaxSlack · -uiTestPace · -uiTestTimings 1
     private func applyLaunchOverrides() {
         let d = UserDefaults.standard
