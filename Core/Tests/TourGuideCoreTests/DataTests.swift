@@ -134,6 +134,38 @@ final class WikidataMatcherTests: XCTestCase {
         XCTAssertEqual(WikidataMatcher.normalize("Kenroku-en Garden"), "kenrokuen")
     }
 
+    func testIndoorPlacesDoNotDonateFameOrHideOutdoorDuplicates() {
+        let ring = [[[35.0, 139.0], [35.0, 139.001], [35.001, 139.001],
+                     [35.001, 139.0], [35.0, 139.0]]]
+        var garden = POI(id: "way/1", lat: 35.0005, lon: 139.0005, name: "Garden", nameLocal: nil,
+                         tags: ["leisure": "garden"], rings: ring, wikidata: "Q1")
+        garden.sitelinks = 2
+        var exhibit = POI(id: "node/2", lat: 35.0005, lon: 139.0005, name: "Exhibit", nameLocal: nil,
+                          tags: ["tourism": "attraction"], allTags: ["indoor": "yes"], wikidata: "Q2")
+        exhibit.sitelinks = 40
+        var contained = [garden, exhibit]
+        WikidataMatcher.dedupe(&contained)
+        XCTAssertNil(contained[1].parent)
+        XCTAssertEqual(contained[0].sitelinks, 2, "indoor fame must not become outdoor garden fame")
+
+        var indoorArea = garden
+        indoorArea.allTags = ["location": "indoor"]
+        var outdoorChild = exhibit
+        outdoorChild.allTags = ["location": "outdoor"]
+        var reverse = [indoorArea, outdoorChild]
+        WikidataMatcher.dedupe(&reverse)
+        XCTAssertNil(reverse[1].parent)
+
+        var exterior = exhibit
+        exterior.id = "node/3"; exterior.allTags = ["location": "outdoor"]
+        for initial in [[exhibit, exterior], [exterior, exhibit]] {
+            var pair = initial
+            WikidataMatcher.dedupe(&pair)
+            XCTAssertFalse(pair[0].isFolded)
+            XCTAssertFalse(pair[1].isFolded, "an indoor first match must not hide an exterior")
+        }
+    }
+
     func testTitleBridgeGuards() {
         func omicho() -> [POI] { [POI(id: "node/1", lat: 36.5714, lon: 136.6562, name: "Omicho Market", nameLocal: "近江町市場", tags: ["amenity": "marketplace"])] }
         func entity(_ coord: [Double]?, p131: [String] = []) -> WikidataEntity {
@@ -214,6 +246,59 @@ final class PipelineTests: XCTestCase {
         XCTAssertEqual(box.pois.first?.tier, 2)
         XCTAssertTrue(stages.items.contains { if case .degraded = $0 { return true }; return false })
         XCTAssertNil(cache.load(FetchBox.self, key: TourPipeline.cacheKey(bbox: box.bbox)), "a degraded box is not cached")
+    }
+
+    func testIndoorSignalSurvivesWikidataFailure() async throws {
+        let overpass = FixtureTransport(directory: URL(fileURLWithPath: "/nonexistent"))
+        let raw = """
+        {"elements":[
+          {"type":"node","id":1,"lat":35.0,"lon":139.0002,"tags":{"tourism":"artwork","name":"Outdoor Gate","wikidata":"Q1"}},
+          {"type":"node","id":2,"lat":35.0,"lon":139.0008,"tags":{"tourism":"attraction","name":"Indoor Collection","wikidata":"Q2","indoor":"yes"}},
+          {"type":"way","id":3,"nodes":[10,11],"tags":{"highway":"footway"}},
+          {"type":"node","id":10,"lat":35.0,"lon":139.0},
+          {"type":"node","id":11,"lat":35.0,"lon":139.0011}
+        ]}
+        """
+        overpass.script(host: "maps.mail.ru", [(200, Data(raw.utf8))])
+        let down = FixtureTransport(directory: URL(fileURLWithPath: "/nonexistent"))
+        for host in ["www.wikidata.org", "query.wikidata.org"] {
+            down.script(host: host, Array(repeating: (503, Data()), count: 9))
+        }
+        let pipeline = TourPipeline(transport: overpass, wikidataTransport: down, cache: nil, overpassPause: 0)
+        let stages = StageLog()
+        let a = Place(name: "A", lat: 35, lon: 139)
+        let b = Place(name: "B", lat: 35, lon: 139.0011)
+        let box = try await pipeline.fetchBox(from: a, to: b) { stages.add($0) }
+        XCTAssertTrue(stages.items.contains { if case .degraded = $0 { return true }; return false })
+        XCTAssertEqual(box.pois.map(\.tier), [2, 2])
+        let session = try TourSession(box: box)
+        let indoor = try XCTUnwrap(session.scored.sights.first { $0.poi.name == "Indoor Collection" })
+        XCTAssertEqual(indoor.weight, 0)
+        XCTAssertEqual(try session.route(slack: 0).passed.map(\.sight.poi.displayName), ["Outdoor Gate"])
+    }
+
+    func testOldCacheIsReusedOnlyWhenIndoorFoldingIsCompatible() async throws {
+        let directory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+            .appendingPathComponent(".build/visibility-cache-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let cache = DiskCache(directory: directory, ttl: 3600)
+        let box = try BundledFixtures.visibility()
+        let (bbox, _) = SlackEllipse.bbox(a: box.start, b: box.end)
+        let oldKey = "box:\(OverpassQuery.version):" + bbox.map { String(format: "%.5f", $0) }.joined(separator: ",")
+        var staleBox = box
+        let outdoorID = staleBox.pois[0].id
+        staleBox.pois[2].parent = outdoorID
+        cache.store(staleBox, key: oldKey)
+        let transport = FixtureTransport(directory: directory)
+        let pipeline = TourPipeline(transport: transport, wikidataTransport: transport, cache: cache)
+        let stale = await pipeline.cachedBox(from: box.start, to: box.end)
+        XCTAssertNil(stale)
+        cache.store(box, key: oldKey)
+        let migrated = await pipeline.cachedBox(from: box.start, to: box.end)
+        XCTAssertEqual(migrated?.pois.count, box.pois.count)
+        let reused = try await pipeline.fetchBox(from: box.start, to: box.end)
+        XCTAssertEqual(reused.pois.count, box.pois.count)
+        XCTAssertTrue(transport.requests.isEmpty)
     }
 
     func testDiskCacheExpires() {

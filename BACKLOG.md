@@ -10,6 +10,11 @@ Deferred work, with enough context to pick up cold. Done items move to LEARNINGS
   pattern. Effort: M.
 - **log(sitelinks) fame** (§8.12) instead of linear with cap 20. Measure with `tgtool route`.
 - **Viewing distance by size** (§8.9): a castle is seen from further than a wayside shrine.
+- **Street visibility beyond explicit indoor tags.** Missing or contradictory tags retain the
+  distance-only heuristic, which cannot establish façade visibility or account for occlusion,
+  windows, levels or indoor collections. Trigger: a small attributed, manually checked sample of
+  streets and sights in Japan and Europe; measure false positives and missed exteriors before
+  adding geometry or broader exclusions. Effort: M.
 - **Free-roam audio callouts**, **sub-stops inside a complex**, **Apple Intelligence filter for
   modern shrines/memorials** (PRD §2 Out).
 - **Sign in with ChatGPT** (M6), gated on OpenAI granting a client_id; the documented callback

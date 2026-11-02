@@ -7,7 +7,16 @@ public enum BundledFixtures {
     public static let kanazawaEnd = Place(name: "Murataya Ryokan", lat: 36.5597, lon: 136.6534)
 
     public static func kanazawa() throws -> FetchBox {
-        guard let url = Bundle.module.url(forResource: "kanazawa", withExtension: "json", subdirectory: "Fixtures") else {
+        try load("kanazawa")
+    }
+
+    /// A synthetic street-visibility scenario, used only by deterministic tests.
+    public static func visibility() throws -> FetchBox {
+        try load("visibility")
+    }
+
+    private static func load(_ name: String) throws -> FetchBox {
+        guard let url = Bundle.module.url(forResource: name, withExtension: "json", subdirectory: "Fixtures") else {
             throw CocoaError(.fileNoSuchFile)
         }
         return try JSONDecoder().decode(FetchBox.self, from: Data(contentsOf: url))

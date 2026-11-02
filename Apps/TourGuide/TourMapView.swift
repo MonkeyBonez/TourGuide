@@ -22,7 +22,7 @@ struct TourMapView: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
         let map = MKMapView()
         map.delegate = context.coordinator
-        map.showsUserLocation = true
+        map.showsUserLocation = !model.isFixture
         map.showsCompass = true
         map.accessibilityIdentifier = "map"
         let press = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleLongPress(_:)))

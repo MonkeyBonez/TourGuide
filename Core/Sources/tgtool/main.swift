@@ -79,8 +79,11 @@ func routeCommand() throws {
     print("interest: \(scored.interest.filter { $0 > 0 }.count) of \(graph.edgeCount) edges scored within \(Int(params.viewingMetres)) m" +
           (params.usePolygons ? " (polygon edges)" : " (centroids)") +
           String(format: "; max %.0f, cap %.0f → score = min(1, interest/cap)", scored.interest.max() ?? 0, params.cap))
-    let unreachedT1 = tier1.filter { $0.edges.isEmpty }
-    print("  \(scored.sights.filter { $0.edges.isEmpty }.count) sights touch no edge at this viewing distance" +
+    let indoors = scored.sights.filter { $0.poi.isExplicitlyIndoor }
+    let noEdge = scored.sights.filter { $0.edges.isEmpty && !$0.poi.isExplicitlyIndoor }
+    let unreachedT1 = noEdge.filter { $0.tier == 1 }
+    if !indoors.isEmpty { print("  \(indoors.count) explicitly indoor sights not credited to street edges") }
+    print("  \(noEdge.count) sights touch no edge at this viewing distance" +
           (unreachedT1.isEmpty ? "" : ": tier 1 → " + unreachedT1.map { $0.poi.name ?? $0.poi.id }.joined(separator: ", ")))
     print(String(format: "direct: %.0f m walking (straight line %.0f m, factor %.2f); labels %.1f ms",
                  session.directMetres, box.straightM, session.directMetres / box.straightM, session.labels.computeMs))
@@ -120,6 +123,7 @@ func routeCommand() throws {
             var why = ""
             switch reach {
             case .passed: break
+            case .explicitlyIndoor: why = "tagged indoors, not credited as a street sight"
             case .noEdge: why = "touches no edge within \(Int(params.viewingMetres)) m"
             case .overBound(let via): why = String(format: "needs %.0f m via it, over the bound", via)
             case .outscored(let via): why = String(format: "reachable (%.0f m via it) but outscored", via)

@@ -237,3 +237,58 @@ Also learned on the way: Wikidata's box bridge gives some small parks another th
 (広坂緑地 → "Shiinoki Cultural Complex", Chuo Park → "Ishikawa Modern Literature Museum"), and the
 four distinct walks along the slider sit at slack 0, 0.02, 0.18 and 0.36 — the Nagamachi walk is
 already reached at 0.02 (+0.1 min).
+
+## 9. Explicit indoor tags and a street walk (2 Nov 2026)
+
+The [OSM `indoor=yes`](https://wiki.openstreetmap.org/wiki/Tag:indoor%3Dyes) and
+[`location=indoor`](https://wiki.openstreetmap.org/wiki/Tag:location%3Dindoor) descriptions both
+identify an indoor feature, not whether its contents are visible from a particular sidewalk.
+`indoor=yes` can describe a shelter and can coexist with `outdoor=yes`; a mixed indoor/outdoor
+feature is not excluded, and even an indoor-only tag cannot prove occlusion.
+The [SFMOMA OSM building](https://www.openstreetmap.org/way/41692824), version 33
+(7 Mar 2025), is `tourism=museum`, `building=yes`, with neither tag. Its category alone is no
+evidence that its exterior is invisible, or that its collection can be seen from outside.
+OSM data © OpenStreetMap contributors, ODbL; the app retains its existing attribution.
+
+Prior-art check: [GraphHopper](https://github.com/graphhopper/graphhopper) is a maintained
+Apache-2.0 OSM router, but its documented Java routing engine is not a small Swift street-sight
+visibility classifier; replacing the pinned in-app corridor engine would not answer this question.
+The existing parser already retains all OSM tags and the scorer already measures point and polygon
+distance, so this slice reuses those rather than adding a routing library.
+
+Before any scoring change, `scripts/measure.sh` matched the Kanazawa golden: 2,941 / 3,012 /
+3,483 / 3,483 / 3,917 m and 1 / 6 / 6 / 6 / 8 Tier-1 sights. Its 519-POI legacy snapshot
+has no `all_tags`, so it cannot establish how often explicit indoor tags occur or validate their
+effect in a real city. In the **entirely synthetic** `visibility.json`, `tgtool route` at slack
+0.5 chose the 779 m south branch and presented two explicitly indoor, high-fame collections as
+passed sights before the untagged museum exterior; at slack 0 it passed only the exterior.
+The temple gate, plaza sculpture, both interiors, graph, IDs and coordinates are invented test
+data, not observations about Japan, Europe or SFMOMA.
+A pair of bounded public Overpass lookups for explicitly indoor tourism nodes in Tokyo and Rome
+failed at transport/timeout in this run; no real-world prevalence was inferred from them.
+The first post-change fixture test gave each outdoor sight 3 fictional sitelinks; the scorer
+correctly kept the 601 m direct walk because their discount did not offset the 178 m detour.
+To exercise a genuine two-route choice rather than assert a false outcome, the synthetic fixture
+now gives each outdoor sight 8 fictional sitelinks; these are controlled inputs, not city data.
+With that fixture, the new scorer keeps the 601 m direct walk at slack 0, and at slack 0.5 takes
+the 779 m north branch past the fictional gate, sculpture and museum exterior in that order.
+The indoor-tagged sights remain as unpassed pins/photo context with zero edge weight; 5 of 18
+edges score, versus 8 before. `swift test` ran 31 focused tests successfully, including the same
+synthetic geometry relocated to Japanese and European latitudes, conflicting/missing tags,
+folding, cache compatibility, and Wikidata failure via `FixtureTransport`. `scripts/measure.sh`
+still matches the unchanged Kanazawa golden.
+With the final fixture and the previous distance-only behavior temporarily restored, `tgtool route`
+again chose the 779 m south branch and the two fictional indoor exhibits (229 interest-seconds)
+before the museum exterior; the changed rule chose the north branch (172 interest-seconds).
+An iOS simulator XCTest on the same fixture showed the old south route and indoor exhibit card.
+This is a controlled comparison, not a measured improvement in any live city.
+The inspected native before/after screenshots both read **9 min · 0.8 km · 3 sights · +2 min**:
+the route geometry and ordered cards, not the summary, reveal the change. With the new rule,
+moving the slider from direct to more sights draws the north branch; tapping its second card
+highlights the fictional sculpture without rerouting. Four focused simulator tests passed,
+including the Kanazawa slider and ordered cards and the off-graph error banner.
+
+The matching cache is versioned because an older cache could have folded an indoor sight into an
+outdoor one and donated its fame. An old cache without cross-class folds is still reusable without
+refreshing its expiry; an incompatible one must be refetched rather than silently retain the
+wrong fame. A refetch can fail offline; the existing failure banner applies.

@@ -13,7 +13,7 @@ public struct ScoringParams: Sendable, Equatable {
     public init() {}
 }
 
-/// A tiered POI and the street edges it can be seen from.
+/// A tiered POI and the street edges credited by the viewing-distance heuristic.
 public struct Sight: Sendable {
     public let poi: POI
     public let tier: Int
@@ -59,6 +59,10 @@ public enum InterestScorer {
             guard tier > 0 else { continue }
             let (px, py) = plane.project(lat: p.lat, lon: p.lon)
             let (dl, along) = lineDistance(px, py)
+            if p.isExplicitlyIndoor {
+                sights.append(Sight(poi: p, tier: tier, weight: 0, edges: [], distToLine: dl, along: along))
+                continue
+            }
             let weight = tier == 1 ? params.tier1Base + Double(p.sitelinks ?? 0) : params.tier2Weight
             let rings: [[(Double, Double)]] = params.usePolygons
                 ? p.rings.map { $0.map { let q = plane.project(lat: $0[0], lon: $0[1]); return (q.x, q.y) } } : []
